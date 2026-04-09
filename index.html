@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>GloBank - Цифровой банк</title>
+    <title>GloBank</title>
+    <link rel="icon" type="image/jpg" href="https://i.ibb.co/5X0dDKZs/IMG-0300.jpg">
     <style>
         * {
             margin: 0;
@@ -502,7 +503,6 @@
             catch (error) { showMessage(msgDiv, 'Неверный email или пароль', true); }
         };
 
-        // Вход по Global ID - без индекса, простой перебор
         window.loginByGlobalId = async () => {
             const globalId = document.getElementById('loginGlobalId').value;
             const msgDiv = document.getElementById('authMessage');
@@ -525,9 +525,8 @@
                 }
                 
                 document.getElementById('loginEmail').value = foundEmail;
-                showMessage(msgDiv, `Найден пользователь: ${foundEmail}. Введите пароль`, false);
+                showMessage(msgDiv, `Найден: ${foundEmail}. Введите пароль`, false);
             } catch (error) {
-                console.error(error);
                 showMessage(msgDiv, 'Ошибка поиска', true);
             }
         };
