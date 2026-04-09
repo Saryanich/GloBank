@@ -5,22 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>GloBank</title>
     
-    <!-- Обычный favicon для вкладки браузера -->
-    <link rel="icon" type="image/jpg" href="https://i.ibb.co/5X0dDKZs/IMG-0300.jpg">
+    <!-- Иконки для iPhone -->
+    <link rel="icon" type="image/jpg" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
+    <link rel="apple-touch-icon" sizes="167x167" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
     
-    <!-- Для iPhone (экран домой) -->
-    <link rel="apple-touch-icon" href="https://i.ibb.co/5X0dDKZs/IMG-0300.jpg">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/5X0dDKZs/IMG-0300.jpg">
-    <link rel="apple-touch-icon" sizes="167x167" href="https://i.ibb.co/5X0dDKZs/IMG-0300.jpg">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://i.ibb.co/5X0dDKZs/IMG-0300.jpg">
-    <link rel="apple-touch-icon" sizes="120x120" href="https://i.ibb.co/5X0dDKZs/IMG-0300.jpg">
-    
-    <!-- Полноэкранный режим как приложение -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GloBank">
-    
-    <!-- Цвет темы для браузера -->
     <meta name="theme-color" content="#0055ff">
     
     <style>
@@ -35,12 +30,15 @@
             background: #f5f7fa;
             min-height: 100vh;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
 
         .app-container {
             max-width: 500px;
             width: 100%;
             margin: 0 auto;
+            flex: 1;
         }
 
         .card {
@@ -55,6 +53,25 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px 16px 16px;
+            font-size: 12px;
+            color: #8e8e93;
+            border-top: 1px solid #e5e5ea;
+            margin-top: 20px;
+            background: transparent;
+        }
+
+        .footer a {
+            color: #0055ff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
         }
 
         .btn {
@@ -322,7 +339,7 @@
         <div id="authForm" class="card">
             <div class="logo-area">
                 <div class="logo-wrapper">
-                    <img src="https://i.ibb.co/5X0dDKZs/IMG-0300.jpg" alt="GloBank" class="logo-img">
+                    <img src="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg" alt="GloBank" class="logo-img">
                     <span class="logo-title">GloBank</span>
                 </div>
                 <div class="slogan">цифровой банк</div>
@@ -443,6 +460,12 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Футер -->
+    <div class="footer">
+        <p>© 2026 IT Global. Все права защищены.</p>
+        <p>Связь с разработчиком сайта: <a href="mailto:vasiliy.novikov389@gmail.com">vasiliy.novikov389@gmail.com</a></p>
     </div>
 
     <script type="module">
