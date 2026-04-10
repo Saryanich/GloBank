@@ -46,6 +46,7 @@
         .btn-secondary { background: transparent; color: #0055ff; border: 1px solid #e5e5ea; }
         .btn-outline { background: transparent; border: 1px solid #e5e5ea; color: #1c1c1e; }
         .btn-success { background: #34c759; color: white; }
+        .btn-warning { background: #ff9500; color: white; }
         .logo-area { text-align: center; margin-bottom: 28px; }
         .logo-wrapper { display: inline-flex; align-items: center; gap: 10px; }
         .logo-img { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; }
@@ -78,8 +79,12 @@
         .user-info-block p { font-size: 13px; color: #8e8e93; margin-top: 2px; }
         .global-id-badge { background: #f2f2f5; padding: 8px 14px; border-radius: 20px; font-family: monospace; font-size: 13px; font-weight: 500; color: #0055ff; margin-top: 6px; display: inline-block; }
         .section-title { font-size: 20px; font-weight: 600; color: #1c1c1e; margin-bottom: 20px; }
+        .tabs { display: flex; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid #e5e5ea; }
+        .tab { padding: 8px 16px; background: transparent; border: none; font-size: 15px; font-weight: 500; color: #8e8e93; cursor: pointer; }
+        .tab.active { color: #0055ff; border-bottom: 2px solid #0055ff; }
         .ai-card { background: #f8f9fc; border-radius: 18px; padding: 16px; margin: 20px 0; font-size: 14px; color: #3a3a3c; }
-        .loan-item { background: #f8f9fc; border-radius: 18px; padding: 18px; margin: 12px 0; }
+        .loan-item { background: #f8f9fc; border-radius: 18px; padding: 18px; margin: 12px 0; cursor: pointer; transition: all 0.2s; }
+        .loan-item:hover { background: #eef2ff; }
         .loan-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
         .loan-label { color: #8e8e93; }
         .loan-value { font-weight: 500; color: #1c1c1e; }
@@ -90,15 +95,29 @@
         .status-completed { background: #e6f7e6; color: #2e7d32; }
         .status-rejected { background: #ffebee; color: #c62828; }
         .card-number { font-size: 20px; font-family: monospace; background: white; padding: 14px; border-radius: 14px; letter-spacing: 1px; margin: 16px 0; border: 1px solid #e5e5ea; text-align: center; }
-        .signature-canvas { border: 2px dashed #e5e5ea; border-radius: 14px; width: 100%; height: 150px; touch-action: none; margin: 16px 0; background: white; }
+        .signature-canvas { border: 2px dashed #e5e5ea; border-radius: 14px; width: 100%; height: 300px; touch-action: none; margin: 16px 0; background: white; }
         .signature-actions { display: flex; gap: 12px; margin-top: 12px; }
         .signature-actions button { width: auto; flex: 1; }
+        .detail-card { background: #f8f9fc; border-radius: 18px; padding: 20px; margin-top: 16px; }
+        .detail-row { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e5e5ea; }
+        .detail-row:last-child { border-bottom: none; }
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: white; border-radius: 24px; padding: 24px; max-width: 90%; width: 500px;
+            max-height: 80%; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .close-modal { font-size: 24px; cursor: pointer; color: #8e8e93; }
         .contract-preview { display: none; }
         @media (max-width: 480px) { body { padding: 12px; } .card { padding: 20px; } .app-header { flex-direction: column; align-items: flex-start; } }
     </style>
 </head>
 <body>
     <div class="app-container">
+        <!-- Форма входа -->
         <div id="authForm" class="card">
             <div class="logo-area">
                 <div class="logo-wrapper">
@@ -125,6 +144,7 @@
             <div id="authMessage" class="message"></div>
         </div>
 
+        <!-- Панель пользователя -->
         <div id="userPanel" style="display:none;">
             <div class="card">
                 <div class="app-header">
@@ -136,50 +156,68 @@
                 </div>
             </div>
 
+            <!-- Вкладки -->
             <div class="card">
-                <h2 class="section-title">Новый займ</h2>
-                <div class="ai-card" id="aiMessage">Укажите сумму займа</div>
-                <div id="aiQuestions">
-                    <div id="q1"><div class="form-group"><label class="form-label">Сумма (₽)</label><input type="number" id="aiAmount" placeholder="от 1 000 до 100 000"></div></div>
-                    <div id="q2" style="display:none;"><div class="form-group"><label class="form-label">Срок (дней)</label><input type="number" id="aiTerm" placeholder="от 7 до 365"></div></div>
-                    <div id="q3" style="display:none;"><div class="form-group"><label class="form-label">Цель займа</label><textarea id="aiPurpose" rows="2" placeholder="Кратко опишите цель"></textarea></div></div>
-                    <button class="btn btn-primary" id="aiNextBtn" onclick="aiNext()">Продолжить</button>
-                    <button class="btn btn-secondary" id="aiResetBtn" onclick="aiReset()" style="display:none;">Начать заново</button>
+                <div class="tabs">
+                    <button class="tab active" onclick="showUserTab('loan')">💰 Новый займ</button>
+                    <button class="tab" onclick="showUserTab('details')">📋 Детали займа</button>
+                </div>
+                
+                <!-- Вкладка Новый займ -->
+                <div id="loanTab">
+                    <div class="ai-card" id="aiMessage">Укажите сумму займа</div>
+                    <div id="aiQuestions">
+                        <div id="q1"><div class="form-group"><label class="form-label">Сумма (₽)</label><input type="number" id="aiAmount" placeholder="от 1 000 до 100 000"></div></div>
+                        <div id="q2" style="display:none;"><div class="form-group"><label class="form-label">Срок (дней)</label><input type="number" id="aiTerm" placeholder="от 7 до 365"></div></div>
+                        <div id="q3" style="display:none;"><div class="form-group"><label class="form-label">Цель займа</label><textarea id="aiPurpose" rows="2" placeholder="Кратко опишите цель"></textarea></div></div>
+                        <button class="btn btn-primary" id="aiNextBtn" onclick="aiNext()">Продолжить</button>
+                        <button class="btn btn-secondary" id="aiResetBtn" onclick="aiReset()" style="display:none;">Начать заново</button>
+                    </div>
+                    <div id="extraForm" style="display:none;">
+                        <div class="form-group"><label class="form-label">ФИО</label><input type="text" id="fullName" placeholder="Иванов Иван Иванович"></div>
+                        <div class="form-group"><label class="form-label">Номер телефона</label><input type="tel" id="phoneNumber" placeholder="+7 999 123-45-67"></div>
+                        <div class="form-group"><label class="form-label">СНИЛС</label><input type="text" id="snils" placeholder="123-456-789 01"></div>
+                        <button class="btn btn-primary" onclick="submitFullRequest()">Отправить заявку</button>
+                    </div>
+                    <div id="resultCard" style="display:none;">
+                        <div id="aiResult"></div>
+                    </div>
+                </div>
+
+                <!-- Вкладка Детали займа -->
+                <div id="detailsTab" style="display:none;">
+                    <div id="loanDetailsContent"></div>
                 </div>
             </div>
 
-            <div class="card" id="extraForm" style="display:none;">
-                <h2 class="section-title">Данные заёмщика</h2>
-                <div class="form-group"><label class="form-label">ФИО</label><input type="text" id="fullName" placeholder="Иванов Иван Иванович"></div>
-                <div class="form-group"><label class="form-label">Номер телефона</label><input type="tel" id="phoneNumber" placeholder="+7 999 123-45-67"></div>
-                <div class="form-group"><label class="form-label">СНИЛС</label><input type="text" id="snils" placeholder="123-456-789 01"></div>
-                <button class="btn btn-primary" onclick="submitFullRequest()">Отправить заявку</button>
-            </div>
-
+            <!-- Форма подписи -->
             <div class="card" id="signatureForm" style="display:none;">
                 <h2 class="section-title">Подписание договора</h2>
                 <div class="ai-card" id="signatureMessage">Нарисуйте вашу подпись в поле ниже</div>
-                <canvas id="signatureCanvas" class="signature-canvas" width="400" height="150"></canvas>
+                <canvas id="signatureCanvas" class="signature-canvas" width="300" height="300"></canvas>
                 <div class="signature-actions">
                     <button class="btn btn-secondary" onclick="clearSignature()">Очистить</button>
-                    <button class="btn btn-primary" onclick="saveSignature()">Подтвердить подпись</button>
+                    <button class="btn btn-warning" onclick="previewContract()">👁️ Предпросмотр договора</button>
+                    <button class="btn btn-primary" onclick="confirmAndSaveSignature()">✅ Подтвердить подпись</button>
                 </div>
-            </div>
-
-            <div class="card" id="resultCard" style="display:none;">
-                <h2 class="section-title">Заявка отправлена</h2>
-                <div id="aiResult"></div>
-            </div>
-
-            <div class="card">
-                <h2 class="section-title">Текущий займ</h2>
-                <div id="myLoanInfo"><div style="text-align:center; padding:24px; color:#8e8e93;">Нет активных займов</div></div>
             </div>
         </div>
     </div>
 
-    <!-- Скрытый блок для генерации PDF договора -->
-    <div id="contractTemplate" style="position: absolute; left: -9999px; top: 0; width: 800px; background: white; padding: 40px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5;">
+    <!-- Модальное окно предпросмотра договора -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Предпросмотр договора</h3>
+                <span class="close-modal" onclick="closePreview()">&times;</span>
+            </div>
+            <div id="previewContent" style="max-height: 500px; overflow-y: auto; font-size: 12px;"></div>
+            <button class="btn btn-primary" onclick="closePreview()" style="margin-top: 16px;">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Скрытый блок для генерации PDF -->
+    <div id="contractTemplate" style="position: absolute; left: -9999px; top: 0; width: 800px; background: white; padding: 40px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">
         <div id="contractContent"></div>
     </div>
 
@@ -204,6 +242,7 @@
 
         let aiStep = 1;
         let loanData = {};
+        let currentLoan = null;
         let currentLoanId = null;
         let signatureCanvas = null;
         let signatureCtx = null;
@@ -211,11 +250,11 @@
         function initSignatureCanvas() {
             signatureCanvas = document.getElementById('signatureCanvas');
             if (!signatureCanvas) return;
-            signatureCanvas.width = signatureCanvas.offsetWidth;
-            signatureCanvas.height = 150;
+            signatureCanvas.width = 300;
+            signatureCanvas.height = 300;
             signatureCtx = signatureCanvas.getContext('2d');
             signatureCtx.fillStyle = 'white';
-            signatureCtx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+            signatureCtx.fillRect(0, 0, 300, 300);
             signatureCtx.strokeStyle = '#1c1c1e';
             signatureCtx.lineWidth = 2;
             signatureCtx.lineCap = 'round';
@@ -223,9 +262,11 @@
             let drawing = false;
             const getPos = (e) => {
                 const rect = signatureCanvas.getBoundingClientRect();
+                const scaleX = 300 / rect.width;
+                const scaleY = 300 / rect.height;
                 const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
                 const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
-                return { x: clientX - rect.left, y: clientY - rect.top };
+                return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
             };
             signatureCanvas.addEventListener('mousedown', (e) => { drawing = true; const {x,y} = getPos(e); signatureCtx.beginPath(); signatureCtx.moveTo(x, y); });
             signatureCanvas.addEventListener('mousemove', (e) => { if (!drawing) return; const {x,y} = getPos(e); signatureCtx.lineTo(x, y); signatureCtx.stroke(); });
@@ -237,10 +278,24 @@
 
         window.clearSignature = () => {
             signatureCtx.fillStyle = 'white';
-            signatureCtx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+            signatureCtx.fillRect(0, 0, 300, 300);
         };
 
-        window.saveSignature = async () => {
+        window.previewContract = async () => {
+            if (!currentLoan) return;
+            const htmlContent = generateContractHTML(currentLoan, false);
+            document.getElementById('previewContent').innerHTML = htmlContent;
+            document.getElementById('previewModal').style.display = 'flex';
+        };
+
+        window.closePreview = () => {
+            document.getElementById('previewModal').style.display = 'none';
+        };
+
+        window.confirmAndSaveSignature = async () => {
+            const confirmMsg = confirm('Вы уверены, что хотите подписать договор?\n\nПосле подписания изменить подпись будет нельзя.');
+            if (!confirmMsg) return;
+            
             const signatureImage = signatureCanvas.toDataURL('image/png');
             if (!currentLoanId) return;
             await updateDoc(doc(db, "loans", currentLoanId), { 
@@ -250,6 +305,7 @@
             document.getElementById('signatureMessage').innerHTML = '✅ Подпись сохранена! Ожидайте подписи администратора.';
             document.getElementById('signatureForm').style.display = 'none';
             loadUserLoan();
+            showUserTab('details');
         };
 
         function generateContractHTML(loan, isCompleted = false) {
@@ -261,11 +317,14 @@
             <html>
             <head><meta charset="UTF-8"><title>Договор займа</title>
             <style>
-                body { font-family: Arial, sans-serif; padding: 40px; line-height: 1.5; position: relative; }
+                body { font-family: Arial, sans-serif; padding: 40px; line-height: 1.6; position: relative; }
                 .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); opacity: 0.15; font-size: 48px; color: red; white-space: nowrap; z-index: 999; }
                 h2 { text-align: center; margin-bottom: 20px; }
-                .sign-line { display: inline-block; width: 150px; border-bottom: 1px solid black; margin: 0 10px; }
-                .signature-img { max-width: 150px; max-height: 50px; vertical-align: middle; }
+                h3 { margin-top: 20px; margin-bottom: 10px; }
+                .sign-line { display: inline-block; width: 200px; border-bottom: 1px solid black; margin: 0 10px; }
+                .signature-img { max-width: 300px; max-height: 300px; vertical-align: middle; margin: 10px 0; }
+                .signature-block { margin: 30px 0 20px 0; padding: 20px 0; border-top: 1px solid #ccc; }
+                p { margin: 8px 0; }
             </style>
             </head>
             <body>
@@ -330,17 +389,19 @@
             <p>9.3. Электронная версия договора, хранящаяся в личном кабинете GloBank, является официальным документом и может быть использована в судебных разбирательствах наравне с бумажной версией.</p>
             <p>9.4. Заёмщик подтверждает, что ознакомлен с условиями договора и согласен с ними. Подписывая договор электронной подписью в системе GloBank, Заёмщик даёт согласие на обработку персональных данных, включая СНИЛС.</p>
             
-            <h3>10. Подписи сторон</h3>
-            <p><strong>Заимодавец:</strong> Новиков Василий Антонович</p>
-            <p>Подпись: ${loan.adminSignature ? `<img src="${loan.adminSignature}" class="signature-img">` : '<span class="sign-line"></span>'}</p>
-            <p>Дата: ${contractDate}</p>
-            <br>
-            <p><strong>Заёмщик:</strong> ${loan.fullName || '_____'}</p>
-            <p>СНИЛС: ${loan.snils || '_____'}</p>
-            <p>Global ID: ${loan.userGlobalId || '_____'}</p>
-            <p>Подпись: ${loan.userSignature ? `<img src="${loan.userSignature}" class="signature-img">` : '<span class="sign-line"></span>'}</p>
-            <p>Дата: ${contractDate}</p>
-            <br>
+            <div class="signature-block">
+                <h3>10. Подписи сторон</h3>
+                <p><strong>Заимодавец:</strong> Новиков Василий Антонович</p>
+                <p>Подпись: ${loan.adminSignature ? `<img src="${loan.adminSignature}" class="signature-img">` : '<span class="sign-line"></span>'}</p>
+                <p>Дата: ${contractDate}</p>
+                <br><br>
+                <p><strong>Заёмщик:</strong> ${loan.fullName || '_____'}</p>
+                <p>СНИЛС: ${loan.snils || '_____'}</p>
+                <p>Global ID: ${loan.userGlobalId || '_____'}</p>
+                <p>Подпись: ${loan.userSignature ? `<img src="${loan.userSignature}" class="signature-img">` : '<span class="sign-line"></span>'}</p>
+                <p>Дата: ${contractDate}</p>
+            </div>
+            
             <p><em>Договор сформирован автоматически в системе GloBank</em></p>
             <p><em>Электронная копия договора доступна в личном кабинете по адресу: https://saryanich.github.io/GloBank/</em></p>
             </body>
@@ -506,6 +567,7 @@
             document.getElementById('resultCard').style.display = 'block';
             document.getElementById('aiResult').innerHTML = `<div style="text-align:center; padding:20px;"><p>✅ Заявка отправлена на модерацию</p><p>Сумма: ${loanData.amount.toLocaleString()} ₽</p><p>Срок: ${loanData.term} дней</p></div>`;
             loadUserLoan();
+            showUserTab('details');
         };
 
         window.aiReset = () => {
@@ -525,40 +587,69 @@
             return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         }
 
-        async function loadUserLoan() {
+        window.showUserTab = (tab) => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            if (tab === 'loan') {
+                document.querySelector('.tab').classList.add('active');
+                document.getElementById('loanTab').style.display = 'block';
+                document.getElementById('detailsTab').style.display = 'none';
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('loanTab').style.display = 'none';
+                document.getElementById('detailsTab').style.display = 'block';
+                loadLoanDetails();
+            }
+        };
+
+        async function loadLoanDetails() {
             const user = auth.currentUser;
             if (!user) return;
             const q = query(collection(db, "loans"), where("userId", "==", user.uid));
             const querySnapshot = await getDocs(q);
-            const container = document.getElementById('myLoanInfo');
-            if (querySnapshot.empty) { container.innerHTML = '<div style="text-align:center; padding:24px; color:#8e8e93;">Нет активных займов</div>'; return; }
+            const container = document.getElementById('loanDetailsContent');
+            if (querySnapshot.empty) {
+                container.innerHTML = '<div style="text-align:center; padding:24px; color:#8e8e93;">Нет займов</div>';
+                return;
+            }
+            
             let html = '';
             for (const docSnap of querySnapshot.docs) {
                 const loan = docSnap.data();
+                currentLoan = loan;
                 currentLoanId = docSnap.id;
                 const statusMap = { 'pending':'На рассмотрении', 'waiting_user_signature':'Ожидает вашей подписи', 'waiting_admin_signature':'Ожидает подписи администратора', 'completed':'Подписан', 'rejected':'Отказано' };
                 const daysLeft = loan.endDate ? daysUntilEnd(loan.endDate.toDate()) : 0;
                 const showCard = loan.status === 'completed' && daysLeft <= 5 && daysLeft >= 0;
                 
-                html += `<div class="loan-item">
-                    <div class="loan-row"><span class="loan-label">Сумма:</span><span class="loan-value">${loan.amount.toLocaleString()} ₽</span></div>
-                    <div class="loan-row"><span class="loan-label">Срок:</span><span class="loan-value">${loan.term} дней</span></div>
-                    <div class="loan-row"><span class="loan-label">Статус:</span><span class="loan-status status-${loan.status === 'pending' ? 'pending' : loan.status}">${statusMap[loan.status] || loan.status}</span></div>`;
+                html += `<div class="detail-card">
+                    <div class="detail-row"><strong>Статус:</strong> <span class="loan-status status-${loan.status === 'pending' ? 'pending' : loan.status}">${statusMap[loan.status] || loan.status}</span></div>
+                    <div class="detail-row"><strong>Сумма займа:</strong> ${loan.amount?.toLocaleString()} ₽</div>
+                    <div class="detail-row"><strong>К выплате:</strong> ${loan.totalToPay?.toLocaleString()} ₽</div>
+                    <div class="detail-row"><strong>Срок:</strong> ${loan.term} дней</div>
+                    <div class="detail-row"><strong>Дата окончания:</strong> ${loan.endDate ? new Date(loan.endDate.toDate()).toLocaleDateString() : '—'}</div>`;
                 
-                if (loan.status === 'waiting_user_signature') {
-                    html += `<div style="margin-top:12px;"><button class="btn btn-primary" onclick="showSignatureForm()">✍️ Подписать договор</button></div>`;
-                }
                 if (loan.status === 'completed') {
-                    html += `<div class="loan-row"><span class="loan-label">К выплате:</span><span class="loan-value">${loan.totalToPay.toLocaleString()} ₽</span></div>`;
+                    html += `<div class="detail-row"><strong>До окончания:</strong> ${daysLeft} дней</div>`;
                     if (showCard) {
-                        html += `<div class="card-number">💰 Реквизиты: 2200 7012 2658 1897</div>`;
+                        html += `<div class="detail-row"><strong>Реквизиты для оплаты:</strong> 2200 7012 2658 1897</div>`;
                     }
-                    html += `<div style="margin-top:12px;"><button class="btn btn-primary" onclick="downloadContractPDFFromLoan('${docSnap.id}')">📄 Скачать договор PDF</button></div>`;
+                    html += `<div class="detail-row"><button class="btn btn-primary" onclick="downloadContractPDFFromLoan('${docSnap.id}')" style="margin-top:12px;">📄 Скачать договор PDF</button></div>`;
+                } else if (loan.status === 'pending') {
+                    html += `<div class="detail-row"><strong>Статус:</strong> Заявка на модерации</div>`;
+                } else if (loan.status === 'waiting_user_signature') {
+                    html += `<div class="detail-row"><button class="btn btn-primary" onclick="showSignatureFormFromDetails()">✍️ Подписать договор</button></div>`;
+                } else if (loan.status === 'waiting_admin_signature') {
+                    html += `<div class="detail-row"><strong>Статус:</strong> Ожидает подписи администратора</div>`;
+                } else if (loan.status === 'rejected') {
+                    html += `<div class="detail-row"><strong>Причина отказа:</strong> ${loan.rejectedReason || 'Не указана'}</div>`;
                 }
-                if (loan.status === 'rejected') {
-                    html += `<div class="loan-row"><span class="loan-label">Причина:</span><span class="loan-value">${loan.rejectedReason || 'Не указана'}</span></div>`;
-                }
-                html += `</div>`;
+                
+                html += `<div class="detail-row"><strong>ФИО:</strong> ${loan.fullName || '—'}</div>
+                    <div class="detail-row"><strong>Телефон:</strong> ${loan.phoneNumber || '—'}</div>
+                    <div class="detail-row"><strong>СНИЛС:</strong> ${loan.snils || '—'}</div>
+                    <div class="detail-row"><strong>Global ID:</strong> ${loan.userGlobalId || '—'}</div>
+                    <div class="detail-row"><strong>Цель займа:</strong> ${loan.reason || '—'}</div>
+                </div>`;
             }
             container.innerHTML = html;
         }
@@ -569,10 +660,29 @@
             await window.downloadContractPDF(loan);
         };
 
-        window.showSignatureForm = () => {
+        window.showSignatureFormFromDetails = () => {
             document.getElementById('signatureForm').style.display = 'block';
             initSignatureCanvas();
         };
+
+        async function loadUserLoan() {
+            const user = auth.currentUser;
+            if (!user) return;
+            const q = query(collection(db, "loans"), where("userId", "==", user.uid));
+            const querySnapshot = await getDocs(q);
+            
+            for (const docSnap of querySnapshot.docs) {
+                const loan = docSnap.data();
+                currentLoan = loan;
+                currentLoanId = docSnap.id;
+                
+                if (loan.status === 'waiting_user_signature') {
+                    document.getElementById('signatureForm').style.display = 'block';
+                    initSignatureCanvas();
+                    document.getElementById('signatureMessage').innerHTML = 'Нарисуйте вашу подпись для подписания договора';
+                }
+            }
+        }
 
         window.showRegister = () => { document.getElementById('loginMode').style.display = 'none'; document.getElementById('registerMode').style.display = 'block'; document.getElementById('authMessage').style.display = 'none'; };
         window.showLogin = () => { document.getElementById('loginMode').style.display = 'block'; document.getElementById('registerMode').style.display = 'none'; document.getElementById('authMessage').style.display = 'none'; };
@@ -588,7 +698,9 @@
                     document.getElementById('userEmail').innerText = user.email;
                     document.getElementById('userGlobalId').innerHTML = `Global ID: ${userData?.globalId || '—'}`;
                     document.getElementById('userAvatar').innerText = user.email?.charAt(0).toUpperCase() || 'Г';
-                    loadUserLoan(); aiReset();
+                    loadUserLoan();
+                    loadLoanDetails();
+                    aiReset();
                 }
             } else {
                 document.getElementById('userPanel').style.display = 'none';
