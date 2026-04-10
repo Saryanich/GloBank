@@ -3,77 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>GloBank</title>
-    
-    <!-- Иконки для iPhone -->
-    <link rel="icon" type="image/jpg" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
+    <title>GloBank - Цифровой банк</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
     <link rel="apple-touch-icon" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
-    <link rel="apple-touch-icon" sizes="167x167" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
-    <link rel="apple-touch-icon" sizes="120x120" href="https://i.ibb.co/WWwR7w2r/IMG-0305.jpg">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GloBank">
     <meta name="theme-color" content="#0055ff">
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f5f7fa;
             min-height: 100vh;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
         }
-
-        .app-container {
-            max-width: 500px;
-            width: 100%;
-            margin: 0 auto;
-            flex: 1;
-        }
-
+        .app-container { max-width: 500px; width: 100%; margin: 0 auto; }
         .card {
             background: #ffffff;
             border-radius: 24px;
             padding: 28px 24px;
             margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
             animation: fadeIn 0.3s ease;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .footer {
-            text-align: center;
-            padding: 24px 16px 16px;
-            font-size: 12px;
-            color: #8e8e93;
-            border-top: 1px solid #e5e5ea;
-            margin-top: 20px;
-            background: transparent;
-        }
-
-        .footer a {
-            color: #0055ff;
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .btn {
             width: 100%;
             padding: 14px 20px;
@@ -85,70 +41,18 @@
             transition: all 0.2s;
             font-family: inherit;
         }
-
-        .btn:active {
-            transform: scale(0.97);
-        }
-
-        .btn-primary {
-            background: #0055ff;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: #0055ff;
-            border: 1px solid #e5e5ea;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #e5e5ea;
-            color: #1c1c1e;
-        }
-
-        .logo-area {
-            text-align: center;
-            margin-bottom: 28px;
-        }
-
-        .logo-wrapper {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-img {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            object-fit: cover;
-        }
-
-        .logo-title {
-            font-size: 26px;
-            font-weight: 600;
-            color: #1c1c1e;
-        }
-
-        .slogan {
-            font-size: 13px;
-            color: #8e8e93;
-            margin-top: 6px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #1c1c1e;
-            margin-bottom: 8px;
-            display: block;
-        }
-
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: #0055ff; color: white; }
+        .btn-secondary { background: transparent; color: #0055ff; border: 1px solid #e5e5ea; }
+        .btn-outline { background: transparent; border: 1px solid #e5e5ea; color: #1c1c1e; }
+        .btn-success { background: #34c759; color: white; }
+        .logo-area { text-align: center; margin-bottom: 28px; }
+        .logo-wrapper { display: inline-flex; align-items: center; gap: 10px; }
+        .logo-img { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; }
+        .logo-title { font-size: 26px; font-weight: 600; color: #1c1c1e; }
+        .slogan { font-size: 13px; color: #8e8e93; margin-top: 6px; }
+        .form-group { margin-bottom: 18px; }
+        .form-label { font-size: 14px; font-weight: 500; color: #1c1c1e; margin-bottom: 8px; display: block; }
         input, textarea {
             width: 100%;
             padding: 14px 16px;
@@ -159,183 +63,42 @@
             background: #f9f9fb;
             transition: all 0.2s;
         }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #0055ff;
-            background: #ffffff;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .divider-line {
-            flex: 1;
-            height: 1px;
-            background: #e5e5ea;
-        }
-
-        .divider-text {
-            font-size: 12px;
-            color: #8e8e93;
-        }
-
-        .switch-link {
-            text-align: center;
-            margin-top: 18px;
-            font-size: 14px;
-            color: #0055ff;
-            cursor: pointer;
-        }
-
-        .message {
-            font-size: 13px;
-            text-align: center;
-            margin-top: 16px;
-            padding: 10px;
-            border-radius: 12px;
-            display: none;
-        }
-
-        .message-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .message-error {
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .user-block {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-avatar {
-            width: 48px;
-            height: 48px;
-            background: #0055ff;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 18px;
-        }
-
-        .user-info-block h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1c1c1e;
-        }
-
-        .user-info-block p {
-            font-size: 13px;
-            color: #8e8e93;
-            margin-top: 2px;
-        }
-
-        .global-id-badge {
-            background: #f2f2f5;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-family: monospace;
-            font-size: 13px;
-            font-weight: 500;
-            color: #0055ff;
-            margin-top: 6px;
-            display: inline-block;
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1c1c1e;
-            margin-bottom: 20px;
-        }
-
-        .ai-card {
-            background: #f8f9fc;
-            border-radius: 18px;
-            padding: 16px;
-            margin: 20px 0;
-            font-size: 14px;
-            color: #3a3a3c;
-        }
-
-        .loan-item {
-            background: #f8f9fc;
-            border-radius: 18px;
-            padding: 18px;
-            margin: 12px 0;
-        }
-
-        .loan-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .loan-label {
-            color: #8e8e93;
-        }
-
-        .loan-value {
-            font-weight: 500;
-            color: #1c1c1e;
-        }
-
-        .loan-status {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
+        input:focus, textarea:focus { outline: none; border-color: #0055ff; background: #ffffff; }
+        .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+        .divider-line { flex: 1; height: 1px; background: #e5e5ea; }
+        .divider-text { font-size: 12px; color: #8e8e93; }
+        .switch-link { text-align: center; margin-top: 18px; font-size: 14px; color: #0055ff; cursor: pointer; }
+        .message { font-size: 13px; text-align: center; margin-top: 16px; padding: 10px; border-radius: 12px; display: none; }
+        .message-success { background: #e8f5e9; color: #2e7d32; }
+        .message-error { background: #ffebee; color: #c62828; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .user-block { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 48px; height: 48px; background: #0055ff; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 18px; }
+        .user-info-block h3 { font-size: 16px; font-weight: 600; color: #1c1c1e; }
+        .user-info-block p { font-size: 13px; color: #8e8e93; margin-top: 2px; }
+        .global-id-badge { background: #f2f2f5; padding: 8px 14px; border-radius: 20px; font-family: monospace; font-size: 13px; font-weight: 500; color: #0055ff; margin-top: 6px; display: inline-block; }
+        .section-title { font-size: 20px; font-weight: 600; color: #1c1c1e; margin-bottom: 20px; }
+        .ai-card { background: #f8f9fc; border-radius: 18px; padding: 16px; margin: 20px 0; font-size: 14px; color: #3a3a3c; }
+        .loan-item { background: #f8f9fc; border-radius: 18px; padding: 18px; margin: 12px 0; }
+        .loan-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .loan-label { color: #8e8e93; }
+        .loan-value { font-weight: 500; color: #1c1c1e; }
+        .loan-status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
         .status-pending { background: #fff3e0; color: #e67700; }
-        .status-active { background: #e6f7e6; color: #2e7d32; }
+        .status-waiting_user_signature { background: #fff3e0; color: #e67700; }
+        .status-waiting_admin_signature { background: #fff3e0; color: #e67700; }
+        .status-completed { background: #e6f7e6; color: #2e7d32; }
         .status-rejected { background: #ffebee; color: #c62828; }
-        .status-closed { background: #eef2f6; color: #5c5f66; }
-
-        .card-number {
-            font-size: 20px;
-            font-family: monospace;
-            background: white;
-            padding: 14px;
-            border-radius: 14px;
-            letter-spacing: 1px;
-            margin: 16px 0;
-            border: 1px solid #e5e5ea;
-            text-align: center;
-        }
-
-        @media (max-width: 480px) {
-            body { padding: 12px; }
-            .card { padding: 20px; }
-            .app-header { flex-direction: column; align-items: flex-start; }
-        }
+        .card-number { font-size: 20px; font-family: monospace; background: white; padding: 14px; border-radius: 14px; letter-spacing: 1px; margin: 16px 0; border: 1px solid #e5e5ea; text-align: center; }
+        .signature-canvas { border: 2px dashed #e5e5ea; border-radius: 14px; width: 100%; height: 150px; touch-action: none; margin: 16px 0; background: white; }
+        .signature-actions { display: flex; gap: 12px; margin-top: 12px; }
+        .signature-actions button { width: auto; flex: 1; }
+        .contract-preview { display: none; }
+        @media (max-width: 480px) { body { padding: 12px; } .card { padding: 20px; } .app-header { flex-direction: column; align-items: flex-start; } }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Форма входа -->
         <div id="authForm" class="card">
             <div class="logo-area">
                 <div class="logo-wrapper">
@@ -344,58 +107,30 @@
                 </div>
                 <div class="slogan">цифровой банк</div>
             </div>
-            
             <div id="loginMode">
-                <div class="form-group">
-                    <label class="form-label">Global ID</label>
-                    <input type="text" id="loginGlobalId" placeholder="Введите Global ID">
-                </div>
+                <div class="form-group"><label class="form-label">Global ID</label><input type="text" id="loginGlobalId" placeholder="Введите Global ID"></div>
                 <button class="btn btn-primary" onclick="loginByGlobalId()">Войти по Global ID</button>
-                
-                <div class="divider">
-                    <div class="divider-line"></div>
-                    <div class="divider-text">или</div>
-                    <div class="divider-line"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Электронная почта</label>
-                    <input type="email" id="loginEmail" placeholder="your@email.com">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Пароль</label>
-                    <input type="password" id="loginPassword" placeholder="Введите пароль">
-                </div>
+                <div class="divider"><div class="divider-line"></div><div class="divider-text">или</div><div class="divider-line"></div></div>
+                <div class="form-group"><label class="form-label">Электронная почта</label><input type="email" id="loginEmail" placeholder="your@email.com"></div>
+                <div class="form-group"><label class="form-label">Пароль</label><input type="password" id="loginPassword" placeholder="Введите пароль"></div>
                 <button class="btn btn-primary" onclick="login()">Войти по Email</button>
                 <div class="switch-link" onclick="showRegister()">Нет аккаунта? Зарегистрироваться</div>
             </div>
-
             <div id="registerMode" style="display:none;">
-                <div class="form-group">
-                    <label class="form-label">Электронная почта</label>
-                    <input type="email" id="regEmail" placeholder="your@email.com">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Пароль</label>
-                    <input type="password" id="regPassword" placeholder="Минимум 6 символов">
-                </div>
+                <div class="form-group"><label class="form-label">Электронная почта</label><input type="email" id="regEmail" placeholder="your@email.com"></div>
+                <div class="form-group"><label class="form-label">Пароль</label><input type="password" id="regPassword" placeholder="Минимум 6 символов"></div>
                 <button class="btn btn-primary" onclick="register()">Зарегистрироваться</button>
                 <div class="switch-link" onclick="showLogin()">Уже есть аккаунт? Войти</div>
             </div>
-
             <div id="authMessage" class="message"></div>
         </div>
 
-        <!-- Панель пользователя -->
         <div id="userPanel" style="display:none;">
             <div class="card">
                 <div class="app-header">
                     <div class="user-block">
                         <div class="user-avatar" id="userAvatar">Г</div>
-                        <div class="user-info-block">
-                            <h3 id="userEmail"></h3>
-                            <div class="global-id-badge" id="userGlobalId"></div>
-                        </div>
+                        <div class="user-info-block"><h3 id="userEmail"></h3><div class="global-id-badge" id="userGlobalId"></div></div>
                     </div>
                     <button class="btn btn-outline" onclick="logout()" style="width: auto; padding: 8px 20px;">Выйти</button>
                 </div>
@@ -403,29 +138,11 @@
 
             <div class="card">
                 <h2 class="section-title">Новый займ</h2>
-                <div class="ai-card" id="aiMessage">
-                    Укажите сумму займа
-                </div>
-                
+                <div class="ai-card" id="aiMessage">Укажите сумму займа</div>
                 <div id="aiQuestions">
-                    <div id="q1">
-                        <div class="form-group">
-                            <label class="form-label">Сумма (₽)</label>
-                            <input type="number" id="aiAmount" placeholder="от 1 000 до 100 000">
-                        </div>
-                    </div>
-                    <div id="q2" style="display:none;">
-                        <div class="form-group">
-                            <label class="form-label">Срок (дней)</label>
-                            <input type="number" id="aiTerm" placeholder="от 7 до 365">
-                        </div>
-                    </div>
-                    <div id="q3" style="display:none;">
-                        <div class="form-group">
-                            <label class="form-label">Цель займа</label>
-                            <textarea id="aiPurpose" rows="2" placeholder="Кратко опишите цель"></textarea>
-                        </div>
-                    </div>
+                    <div id="q1"><div class="form-group"><label class="form-label">Сумма (₽)</label><input type="number" id="aiAmount" placeholder="от 1 000 до 100 000"></div></div>
+                    <div id="q2" style="display:none;"><div class="form-group"><label class="form-label">Срок (дней)</label><input type="number" id="aiTerm" placeholder="от 7 до 365"></div></div>
+                    <div id="q3" style="display:none;"><div class="form-group"><label class="form-label">Цель займа</label><textarea id="aiPurpose" rows="2" placeholder="Кратко опишите цель"></textarea></div></div>
                     <button class="btn btn-primary" id="aiNextBtn" onclick="aiNext()">Продолжить</button>
                     <button class="btn btn-secondary" id="aiResetBtn" onclick="aiReset()" style="display:none;">Начать заново</button>
                 </div>
@@ -433,19 +150,20 @@
 
             <div class="card" id="extraForm" style="display:none;">
                 <h2 class="section-title">Данные заёмщика</h2>
-                <div class="form-group">
-                    <label class="form-label">ФИО</label>
-                    <input type="text" id="fullName" placeholder="Иванов Иван Иванович">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Номер телефона</label>
-                    <input type="tel" id="phoneNumber" placeholder="+7 999 123-45-67">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">СНИЛС</label>
-                    <input type="text" id="snils" placeholder="123-456-789 01">
-                </div>
+                <div class="form-group"><label class="form-label">ФИО</label><input type="text" id="fullName" placeholder="Иванов Иван Иванович"></div>
+                <div class="form-group"><label class="form-label">Номер телефона</label><input type="tel" id="phoneNumber" placeholder="+7 999 123-45-67"></div>
+                <div class="form-group"><label class="form-label">СНИЛС</label><input type="text" id="snils" placeholder="123-456-789 01"></div>
                 <button class="btn btn-primary" onclick="submitFullRequest()">Отправить заявку</button>
+            </div>
+
+            <div class="card" id="signatureForm" style="display:none;">
+                <h2 class="section-title">Подписание договора</h2>
+                <div class="ai-card" id="signatureMessage">Нарисуйте вашу подпись в поле ниже</div>
+                <canvas id="signatureCanvas" class="signature-canvas" width="400" height="150"></canvas>
+                <div class="signature-actions">
+                    <button class="btn btn-secondary" onclick="clearSignature()">Очистить</button>
+                    <button class="btn btn-primary" onclick="saveSignature()">Подтвердить подпись</button>
+                </div>
             </div>
 
             <div class="card" id="resultCard" style="display:none;">
@@ -455,17 +173,14 @@
 
             <div class="card">
                 <h2 class="section-title">Текущий займ</h2>
-                <div id="myLoanInfo">
-                    <div style="text-align:center; padding:24px; color:#8e8e93;">Нет активных займов</div>
-                </div>
+                <div id="myLoanInfo"><div style="text-align:center; padding:24px; color:#8e8e93;">Нет активных займов</div></div>
             </div>
         </div>
     </div>
 
-    <!-- Футер -->
-    <div class="footer">
-        <p>© 2026 IT Global. Все права защищены.</p>
-        <p>Связь с разработчиком сайта: <a href="mailto:vasiliy.novikov389@gmail.com">vasiliy.novikov389@gmail.com</a></p>
+    <!-- Скрытый блок для генерации PDF договора -->
+    <div id="contractTemplate" style="position: absolute; left: -9999px; top: 0; width: 800px; background: white; padding: 40px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5;">
+        <div id="contractContent"></div>
     </div>
 
     <script type="module">
@@ -480,16 +195,200 @@
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth();
         const db = getFirestore();
-
         setPersistence(auth, browserLocalPersistence);
 
         let aiStep = 1;
         let loanData = {};
+        let currentLoanId = null;
+        let signatureCanvas = null;
+        let signatureCtx = null;
+
+        function initSignatureCanvas() {
+            signatureCanvas = document.getElementById('signatureCanvas');
+            if (!signatureCanvas) return;
+            signatureCanvas.width = signatureCanvas.offsetWidth;
+            signatureCanvas.height = 150;
+            signatureCtx = signatureCanvas.getContext('2d');
+            signatureCtx.fillStyle = 'white';
+            signatureCtx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+            signatureCtx.strokeStyle = '#1c1c1e';
+            signatureCtx.lineWidth = 2;
+            signatureCtx.lineCap = 'round';
+            
+            let drawing = false;
+            const getPos = (e) => {
+                const rect = signatureCanvas.getBoundingClientRect();
+                const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+                const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            };
+            signatureCanvas.addEventListener('mousedown', (e) => { drawing = true; const {x,y} = getPos(e); signatureCtx.beginPath(); signatureCtx.moveTo(x, y); });
+            signatureCanvas.addEventListener('mousemove', (e) => { if (!drawing) return; const {x,y} = getPos(e); signatureCtx.lineTo(x, y); signatureCtx.stroke(); });
+            signatureCanvas.addEventListener('mouseup', () => { drawing = false; });
+            signatureCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; const {x,y} = getPos(e); signatureCtx.beginPath(); signatureCtx.moveTo(x, y); });
+            signatureCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); if (!drawing) return; const {x,y} = getPos(e); signatureCtx.lineTo(x, y); signatureCtx.stroke(); });
+            signatureCanvas.addEventListener('touchend', () => { drawing = false; });
+        }
+
+        window.clearSignature = () => {
+            signatureCtx.fillStyle = 'white';
+            signatureCtx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+        };
+
+        window.saveSignature = async () => {
+            const signatureImage = signatureCanvas.toDataURL('image/png');
+            if (!currentLoanId) return;
+            await updateDoc(doc(db, "loans", currentLoanId), { 
+                userSignature: signatureImage,
+                status: "waiting_admin_signature"
+            });
+            document.getElementById('signatureMessage').innerHTML = '✅ Подпись сохранена! Ожидайте подписи администратора.';
+            document.getElementById('signatureForm').style.display = 'none';
+            loadUserLoan();
+        };
+
+        function generateContractHTML(loan, isCompleted = false) {
+            const contractDate = new Date().toLocaleDateString('ru-RU');
+            const endDate = loan.endDate ? new Date(loan.endDate.toDate()).toLocaleDateString('ru-RU') : '_____';
+            const watermark = !isCompleted ? '<div style="position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-45deg); opacity:0.15; font-size:48px; color:red; white-space:nowrap; z-index:999;">⚠️ НЕ ПОДПИСАНО ⚠️</div>' : '';
+            
+            return `<!DOCTYPE html>
+            <html>
+            <head><meta charset="UTF-8"><title>Договор займа</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 40px; line-height: 1.5; position: relative; }
+                .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); opacity: 0.15; font-size: 48px; color: red; white-space: nowrap; z-index: 999; }
+                h2 { text-align: center; margin-bottom: 20px; }
+                .sign-line { display: inline-block; width: 150px; border-bottom: 1px solid black; margin: 0 10px; }
+                .signature-img { max-width: 150px; max-height: 50px; vertical-align: middle; }
+            </style>
+            </head>
+            <body>
+            ${!isCompleted ? watermark : ''}
+            <h2>Договор займа</h2>
+            <p>г. Нижнекамск</p>
+            <p><strong>Заимодавец:</strong> Новиков Василий Антонович (далее — «Заимодавец»)</p>
+            <p><strong>Заёмщик:</strong> ${loan.fullName || '_____'} (далее — «Заёмщик»)</p>
+            <p><strong>СНИЛС Заёмщика:</strong> ${loan.snils || '_____'}</p>
+            <p><strong>Global ID:</strong> ${loan.userGlobalId || '_____'}</p>
+            <p>Мы, Заимодавец и Заёмщик, заключили настоящий договор о нижеследующем:</p>
+            
+            <h3>1. Предмет договора</h3>
+            <p>1.1. Заимодавец передаёт Заёмщику денежные средства в размере <strong>${loan.amount?.toLocaleString() || '_____'} рублей</strong>.</p>
+            <p>1.2. Заёмщик обязуется вернуть Заимодавцу <strong>${loan.totalToPay?.toLocaleString() || '_____'} рублей</strong>, включая проценты за пользование займом.</p>
+            <p>1.3. Процентная ставка: 15% (пятнадцать процентов) в месяц от суммы займа.</p>
+            
+            <h3>2. Порядок передачи и возврата займа</h3>
+            <p>2.1. Сумма займа перечисляется Заёмщику на банковскую карту по реквизитам, указанным Заимодавцем.</p>
+            <p>2.2. Реквизиты для перевода: <strong>2200 7012 2658 1897</strong>.</p>
+            <p>2.3. Заёмщик возвращает сумму займа вместе с процентами единовременно.</p>
+            <p>2.4. Срок возврата: через <strong>${loan.term || '_____'} дней</strong> с даты подписания договора.</p>
+            <p>2.5. Крайняя дата возврата: <strong>${endDate}</strong>.</p>
+            
+            <h3>3. Условия займа</h3>
+            <p>3.1. Срок займа: <strong>${loan.term || '_____'} дней</strong>.</p>
+            <p>3.2. Проценты за пользование займом: 15% в месяц.</p>
+            <p>3.3. Формула расчёта процентов: Проценты = Сумма займа × 15% × (Срок займа / 30 дней)</p>
+            <p>3.4. Общая сумма возврата включает сумму займа и начисленные проценты.</p>
+            
+            <h3>4. Порядок оплаты</h3>
+            <p>4.1. Заёмщик обязуется перевести денежные средства на карту Заимодавца: <strong>2200 7012 2658 1897</strong>.</p>
+            <p>4.2. В назначении платежа указать: «Возврат займа по договору от ${contractDate}, Global ID: ${loan.userGlobalId || '_____'}, СНИЛС: ${loan.snils || '_____'}».</p>
+            <p>4.3. Факт оплаты подтверждается выпиской по банковской карте Заёмщика.</p>
+            
+            <h3>5. Ответственность за просрочку</h3>
+            <p>5.1. Если Заёмщик не возвращает сумму займа в установленный срок, он выплачивает Заимодавцу неустойку в размере 0,5% (ноль целых пять десятых процента) от невозвращённой суммы за каждый день просрочки.</p>
+            <p>5.2. Неустойка начисляется до момента полного погашения задолженности.</p>
+            
+            <h3>6. Реквизиты для оплаты</h3>
+            <p><strong>Номер карты:</strong> 2200 7012 2658 1897</p>
+            <p><strong>Получатель:</strong> Новиков Василий Антонович</p>
+            <p><strong>Банк:</strong> ПАО Т-Банк</p>
+            <p><strong>Назначение платежа:</strong> Возврат займа, Global ID: ${loan.userGlobalId || '_____'}, СНИЛС: ${loan.snils || '_____'}</p>
+            
+            <h3>7. Идентификация Заёмщика</h3>
+            <p>7.1. Заёмщик подтверждает, что указанный СНИЛС ${loan.snils || '_____'} принадлежит ему и является действительным.</p>
+            <p>7.2. Заимодавец вправе проверить действительность СНИЛС через государственные реестры.</p>
+            <p>7.3. Предоставление недействительного или чужого СНИЛС является основанием для отказа в выдаче займа или расторжения договора в одностороннем порядке.</p>
+            
+            <h3>8. Порядок хранения и использования документов в системе GloBank</h3>
+            <p>8.1. Настоящий договор формируется автоматически в электронном виде в системе GloBank.</p>
+            <p>8.2. Электронная копия договора хранится в личном кабинете Заёмщика в системе GloBank и доступна для скачивания в любое время.</p>
+            <p>8.3. Заёмщик может в любой момент просмотреть, скачать или распечатать договор из своего личного кабинета.</p>
+            <p>8.4. Все изменения статуса займа (одобрение, просрочка, закрытие) фиксируются в системе GloBank и отражаются в личном кабинете Заёмщика.</p>
+            <p>8.5. Система GloBank автоматически уведомляет Заёмщика о приближении даты возврата займа за 5 дней до окончания срока.</p>
+            <p>8.6. В случае просрочки система GloBank ежедневно начисляет неустойку и отображает актуальную сумму задолженности в личном кабинете.</p>
+            
+            <h3>9. Прочие условия</h3>
+            <p>9.1. Споры решаются путём переговоров.</p>
+            <p>9.2. Договор составлен в двух экземплярах — в электронном виде (в системе GloBank) и на бумажном носителе. Оба экземпляра имеют одинаковую юридическую силу.</p>
+            <p>9.3. Электронная версия договора, хранящаяся в личном кабинете GloBank, является официальным документом и может быть использована в судебных разбирательствах наравне с бумажной версией.</p>
+            <p>9.4. Заёмщик подтверждает, что ознакомлен с условиями договора и согласен с ними. Подписывая договор электронной подписью в системе GloBank, Заёмщик даёт согласие на обработку персональных данных, включая СНИЛС.</p>
+            
+            <h3>10. Подписи сторон</h3>
+            <p><strong>Заимодавец:</strong> Новиков Василий Антонович</p>
+            <p>Подпись: ${loan.adminSignature ? `<img src="${loan.adminSignature}" class="signature-img">` : '<span class="sign-line"></span>'}</p>
+            <p>Дата: ${contractDate}</p>
+            <br>
+            <p><strong>Заёмщик:</strong> ${loan.fullName || '_____'}</p>
+            <p>СНИЛС: ${loan.snils || '_____'}</p>
+            <p>Global ID: ${loan.userGlobalId || '_____'}</p>
+            <p>Подпись: ${loan.userSignature ? `<img src="${loan.userSignature}" class="signature-img">` : '<span class="sign-line"></span>'}</p>
+            <p>Дата: ${contractDate}</p>
+            <br>
+            <p><em>Договор сформирован автоматически в системе GloBank</em></p>
+            <p><em>Электронная копия договора доступна в личном кабинете по адресу: https://saryanich.github.io/GloBank/</em></p>
+            </body>
+            </html>`;
+        }
+
+        window.downloadContractPDF = async (loan) => {
+            const isCompleted = loan.status === 'completed';
+            const htmlContent = generateContractHTML(loan, isCompleted);
+            const contractDiv = document.getElementById('contractContent');
+            contractDiv.innerHTML = htmlContent;
+            
+            const element = document.getElementById('contractTemplate');
+            element.style.position = 'absolute';
+            element.style.left = '0';
+            element.style.top = '0';
+            element.style.width = '800px';
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            try {
+                const canvas = await html2canvas(element, { scale: 2, logging: false });
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const imgWidth = 210;
+                const pageHeight = 297;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let pdf = new jsPDF('p', 'mm', 'a4');
+                let heightLeft = imgHeight;
+                let position = 0;
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                pdf.save(`dogovor_zaima_${loan.userGlobalId || 'contract'}.pdf`);
+            } catch (err) {
+                console.error('PDF generation error:', err);
+                alert('Ошибка генерации PDF');
+            } finally {
+                element.style.position = 'absolute';
+                element.style.left = '-9999px';
+                contractDiv.innerHTML = '';
+            }
+        };
 
         function generateGlobalId() {
             const digits = '0123456789';
@@ -548,28 +447,14 @@
             const globalId = document.getElementById('loginGlobalId').value;
             const msgDiv = document.getElementById('authMessage');
             if (!globalId) { showMessage(msgDiv, 'Введите Global ID', true); return; }
-            
             try {
                 const querySnapshot = await getDocs(collection(db, "users"));
                 let foundEmail = null;
-                
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if (data.globalId === globalId) {
-                        foundEmail = data.email;
-                    }
-                });
-                
-                if (!foundEmail) {
-                    showMessage(msgDiv, 'Global ID не найден', true);
-                    return;
-                }
-                
+                querySnapshot.forEach((doc) => { const data = doc.data(); if (data.globalId === globalId) foundEmail = data.email; });
+                if (!foundEmail) { showMessage(msgDiv, 'Global ID не найден', true); return; }
                 document.getElementById('loginEmail').value = foundEmail;
                 showMessage(msgDiv, `Найден: ${foundEmail}. Введите пароль`, false);
-            } catch (error) {
-                showMessage(msgDiv, 'Ошибка поиска', true);
-            }
+            } catch (error) { showMessage(msgDiv, 'Ошибка поиска', true); }
         };
 
         window.logout = async () => { await signOut(auth); };
@@ -603,121 +488,74 @@
             const fullName = document.getElementById('fullName').value;
             const phoneNumber = document.getElementById('phoneNumber').value;
             const snils = document.getElementById('snils').value;
-
-            if (!fullName || !phoneNumber || !snils) {
-                alert('Заполните все поля');
-                return;
-            }
-
+            if (!fullName || !phoneNumber || !snils) { alert('Заполните все поля'); return; }
             const interest = 15;
             const totalToPay = loanData.amount * (1 + (interest / 100) * (loanData.term / 30));
             const endDate = new Date();
             endDate.setDate(endDate.getDate() + loanData.term);
-            
             const userDoc = await getDoc(doc(db, "users", user.uid));
             const userData = userDoc.data();
-            
-            await addDoc(collection(db, "loans"), {
-                userId: user.uid,
-                userGlobalId: userData.globalId,
-                userEmail: user.email,
-                fullName: fullName,
-                phoneNumber: phoneNumber,
-                snils: snils,
-                amount: loanData.amount,
-                interest: interest,
-                term: loanData.term,
-                monthlyPayment: Math.round(totalToPay / (loanData.term / 30)),
-                totalToPay: Math.round(totalToPay),
-                reason: loanData.purpose,
-                status: "pending",
-                createdAt: new Date(),
-                endDate: endDate
+            const loanRef = await addDoc(collection(db, "loans"), {
+                userId: user.uid, userGlobalId: userData.globalId, userEmail: user.email,
+                fullName, phoneNumber, snils, amount: loanData.amount, interest, term: loanData.term,
+                monthlyPayment: Math.round(totalToPay / (loanData.term / 30)), totalToPay: Math.round(totalToPay),
+                reason: loanData.purpose, status: "pending", createdAt: new Date(), endDate: endDate
             });
-
+            currentLoanId = loanRef.id;
             document.getElementById('extraForm').style.display = 'none';
             document.getElementById('resultCard').style.display = 'block';
-            document.getElementById('aiResult').innerHTML = `
-                <div style="text-align:center; padding:20px;">
-                    <p style="margin-bottom:16px;">✅ Заявка отправлена на модерацию</p>
-                    <p style="font-size:14px; color:#8e8e93;">Сумма: ${loanData.amount.toLocaleString()} ₽</p>
-                    <p style="font-size:14px; color:#8e8e93;">Срок: ${loanData.term} дней</p>
-                    <p style="font-size:14px; color:#8e8e93;">Статус: На рассмотрении</p>
-                </div>
-            `;
+            document.getElementById('aiResult').innerHTML = `<div style="text-align:center; padding:20px;"><p>✅ Заявка отправлена на модерацию</p><p>Сумма: ${loanData.amount.toLocaleString()} ₽</p><p>Срок: ${loanData.term} дней</p></div>`;
             loadUserLoan();
         };
 
         window.aiReset = () => {
             aiStep = 1; loanData = {};
-            document.getElementById('aiAmount').value = ''; 
-            document.getElementById('aiTerm').value = ''; 
-            document.getElementById('aiPurpose').value = '';
-            document.getElementById('fullName').value = '';
-            document.getElementById('phoneNumber').value = '';
-            document.getElementById('snils').value = '';
-            document.getElementById('q1').style.display = 'block';
-            document.getElementById('q2').style.display = 'none';
-            document.getElementById('q3').style.display = 'none';
-            document.getElementById('aiQuestions').style.display = 'block';
-            document.getElementById('extraForm').style.display = 'none';
-            document.getElementById('resultCard').style.display = 'none';
-            document.getElementById('aiNextBtn').innerText = 'Продолжить';
-            document.getElementById('aiResetBtn').style.display = 'none';
+            document.getElementById('aiAmount').value = ''; document.getElementById('aiTerm').value = ''; document.getElementById('aiPurpose').value = '';
+            document.getElementById('fullName').value = ''; document.getElementById('phoneNumber').value = ''; document.getElementById('snils').value = '';
+            document.getElementById('q1').style.display = 'block'; document.getElementById('q2').style.display = 'none'; document.getElementById('q3').style.display = 'none';
+            document.getElementById('aiQuestions').style.display = 'block'; document.getElementById('extraForm').style.display = 'none'; document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('aiNextBtn').innerText = 'Продолжить'; document.getElementById('aiResetBtn').style.display = 'none';
             document.getElementById('aiMessage').innerHTML = 'Укажите сумму займа (от 1 000 до 100 000 ₽)';
-        };
-
-        window.copyCardNumber = () => { 
-            navigator.clipboard.writeText('2200 7012 2658 1897'); 
-            alert('Номер карты скопирован'); 
         };
 
         function daysUntilEnd(endDate) {
             const today = new Date();
             const end = new Date(endDate);
             const diffTime = end - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays;
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         }
 
         async function loadUserLoan() {
             const user = auth.currentUser;
             if (!user) return;
-            
-            const loansRef = collection(db, "loans");
-            const q = query(loansRef, where("userId", "==", user.uid));
+            const q = query(collection(db, "loans"), where("userId", "==", user.uid));
             const querySnapshot = await getDocs(q);
-            
             const container = document.getElementById('myLoanInfo');
-            if (querySnapshot.empty) { 
-                container.innerHTML = '<div style="text-align:center; padding:24px; color:#8e8e93;">Нет активных займов</div>'; 
-                return; 
-            }
-            
+            if (querySnapshot.empty) { container.innerHTML = '<div style="text-align:center; padding:24px; color:#8e8e93;">Нет активных займов</div>'; return; }
             let html = '';
             for (const docSnap of querySnapshot.docs) {
                 const loan = docSnap.data();
-                const statusMap = { 'pending':'На рассмотрении', 'active':'Активен', 'rejected':'Отказано', 'closed':'Закрыт' };
+                currentLoanId = docSnap.id;
+                const statusMap = { 'pending':'На рассмотрении', 'waiting_user_signature':'Ожидает вашей подписи', 'waiting_admin_signature':'Ожидает подписи администратора', 'completed':'Подписан', 'rejected':'Отказано' };
                 const daysLeft = loan.endDate ? daysUntilEnd(loan.endDate.toDate()) : 0;
-                const showCard = loan.status === 'active' && daysLeft <= 5 && daysLeft >= 0;
+                const showCard = loan.status === 'completed' && daysLeft <= 5 && daysLeft >= 0;
                 
                 html += `<div class="loan-item">
                     <div class="loan-row"><span class="loan-label">Сумма:</span><span class="loan-value">${loan.amount.toLocaleString()} ₽</span></div>
                     <div class="loan-row"><span class="loan-label">Срок:</span><span class="loan-value">${loan.term} дней</span></div>
-                    <div class="loan-row"><span class="loan-label">Статус:</span><span class="loan-status status-${loan.status}">${statusMap[loan.status]}</span></div>`;
+                    <div class="loan-row"><span class="loan-label">Статус:</span><span class="loan-status status-${loan.status === 'pending' ? 'pending' : loan.status}">${statusMap[loan.status] || loan.status}</span></div>`;
                 
-                if (loan.status === 'active') {
-                    html += `<div class="loan-row"><span class="loan-label">К выплате:</span><span class="loan-value">${loan.totalToPay.toLocaleString()} ₽</span></div>
-                             <div class="loan-row"><span class="loan-label">До окончания:</span><span class="loan-value">${daysLeft} дней</span></div>`;
+                if (loan.status === 'waiting_user_signature') {
+                    html += `<div style="margin-top:12px;"><button class="btn btn-primary" onclick="showSignatureForm()">✍️ Подписать договор</button></div>`;
+                }
+                if (loan.status === 'completed') {
+                    html += `<div class="loan-row"><span class="loan-label">К выплате:</span><span class="loan-value">${loan.totalToPay.toLocaleString()} ₽</span></div>`;
                     if (showCard) {
-                        html += `<div class="card-number">💰 Реквизиты: 2200 7012 2658 1897</div>
-                                 <button class="btn btn-secondary" onclick="copyCardNumber()">Копировать карту</button>`;
-                    } else if (daysLeft > 5) {
-                        html += `<div style="text-align:center; padding:12px; background:#f0f0f0; border-radius:12px; margin-top:12px;">
-                                    🔒 Реквизиты появятся за 5 дней до окончания займа
-                                 </div>`;
+                        html += `<div class="card-number">💰 Реквизиты: 2200 7012 2658 1897</div>`;
                     }
-                } else if (loan.status === 'rejected') {
+                    html += `<div style="margin-top:12px;"><button class="btn btn-primary" onclick="downloadContractPDFFromLoan('${docSnap.id}')">📄 Скачать договор PDF</button></div>`;
+                }
+                if (loan.status === 'rejected') {
                     html += `<div class="loan-row"><span class="loan-label">Причина:</span><span class="loan-value">${loan.rejectedReason || 'Не указана'}</span></div>`;
                 }
                 html += `</div>`;
@@ -725,31 +563,32 @@
             container.innerHTML = html;
         }
 
-        window.showRegister = () => {
-            document.getElementById('loginMode').style.display = 'none';
-            document.getElementById('registerMode').style.display = 'block';
-            document.getElementById('authMessage').style.display = 'none';
+        window.downloadContractPDFFromLoan = async (loanId) => {
+            const loanDoc = await getDoc(doc(db, "loans", loanId));
+            const loan = loanDoc.data();
+            await window.downloadContractPDF(loan);
         };
-        window.showLogin = () => {
-            document.getElementById('loginMode').style.display = 'block';
-            document.getElementById('registerMode').style.display = 'none';
-            document.getElementById('authMessage').style.display = 'none';
+
+        window.showSignatureForm = () => {
+            document.getElementById('signatureForm').style.display = 'block';
+            initSignatureCanvas();
         };
+
+        window.showRegister = () => { document.getElementById('loginMode').style.display = 'none'; document.getElementById('registerMode').style.display = 'block'; document.getElementById('authMessage').style.display = 'none'; };
+        window.showLogin = () => { document.getElementById('loginMode').style.display = 'block'; document.getElementById('registerMode').style.display = 'none'; document.getElementById('authMessage').style.display = 'none'; };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 const userData = userDoc.data();
-                if (userData?.role === 'admin') {
-                    window.location.href = 'admin.html';
-                } else {
+                if (userData?.role === 'admin') { window.location.href = 'admin.html'; }
+                else {
                     document.getElementById('userPanel').style.display = 'block';
                     document.getElementById('authForm').style.display = 'none';
                     document.getElementById('userEmail').innerText = user.email;
                     document.getElementById('userGlobalId').innerHTML = `Global ID: ${userData?.globalId || '—'}`;
                     document.getElementById('userAvatar').innerText = user.email?.charAt(0).toUpperCase() || 'Г';
-                    loadUserLoan();
-                    aiReset();
+                    loadUserLoan(); aiReset();
                 }
             } else {
                 document.getElementById('userPanel').style.display = 'none';
