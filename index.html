@@ -19,8 +19,20 @@
             background: #f5f7fa;
             min-height: 100vh;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
-        .app-container { max-width: 500px; width: 100%; margin: 0 auto; }
+        .app-container { max-width: 500px; width: 100%; margin: 0 auto; flex: 1; }
+        .footer {
+            text-align: center;
+            padding: 24px 16px 16px;
+            font-size: 12px;
+            color: #8e8e93;
+            border-top: 1px solid #e5e5ea;
+            margin-top: 20px;
+            background: transparent;
+        }
+        .footer a { color: #0055ff; text-decoration: none; }
         .card {
             background: #ffffff;
             border-radius: 24px;
@@ -111,7 +123,14 @@
         }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .close-modal { font-size: 24px; cursor: pointer; color: #8e8e93; }
-        .contract-preview { display: none; }
+        .saved-info-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
         @media (max-width: 480px) { body { padding: 12px; } .card { padding: 20px; } .app-header { flex-direction: column; align-items: flex-start; } }
     </style>
 </head>
@@ -150,7 +169,10 @@
                 <div class="app-header">
                     <div class="user-block">
                         <div class="user-avatar" id="userAvatar">Г</div>
-                        <div class="user-info-block"><h3 id="userEmail"></h3><div class="global-id-badge" id="userGlobalId"></div></div>
+                        <div class="user-info-block">
+                            <h3 id="userEmail"></h3>
+                            <div class="global-id-badge" id="userGlobalId"></div>
+                        </div>
                     </div>
                     <button class="btn btn-outline" onclick="logout()" style="width: auto; padding: 8px 20px;">Выйти</button>
                 </div>
@@ -173,12 +195,31 @@
                         <button class="btn btn-primary" id="aiNextBtn" onclick="aiNext()">Продолжить</button>
                         <button class="btn btn-secondary" id="aiResetBtn" onclick="aiReset()" style="display:none;">Начать заново</button>
                     </div>
+                    
+                    <!-- Форма дополнительных данных (показывается только при первом займе) -->
                     <div id="extraForm" style="display:none;">
+                        <div class="ai-card" style="background:#e8f5e9; color:#2e7d32;">
+                            📝 Это ваш первый займ. Пожалуйста, заполните данные. В следующий раз они подставятся автоматически.
+                        </div>
                         <div class="form-group"><label class="form-label">ФИО</label><input type="text" id="fullName" placeholder="Иванов Иван Иванович"></div>
                         <div class="form-group"><label class="form-label">Номер телефона</label><input type="tel" id="phoneNumber" placeholder="+7 999 123-45-67"></div>
+                        <div class="form-group"><label class="form-label">Номер карты для получения займа</label><input type="text" id="userCardNumber" placeholder="2200 7012 2658 1897"></div>
                         <div class="form-group"><label class="form-label">СНИЛС</label><input type="text" id="snils" placeholder="123-456-789 01"></div>
                         <button class="btn btn-primary" onclick="submitFullRequest()">Отправить заявку</button>
                     </div>
+                    
+                    <!-- Форма для повторных займов (данные уже сохранены) -->
+                    <div id="quickForm" style="display:none;">
+                        <div class="ai-card" style="background:#e8f5e9; color:#2e7d32;">
+                            ✅ Ваши данные сохранены. Заполните только сумму, срок и цель.
+                        </div>
+                        <div class="form-group"><label class="form-label">ФИО</label><input type="text" id="quickFullName" readonly style="background:#f0f0f0;"></div>
+                        <div class="form-group"><label class="form-label">Телефон</label><input type="text" id="quickPhone" readonly style="background:#f0f0f0;"></div>
+                        <div class="form-group"><label class="form-label">Карта для получения</label><input type="text" id="quickCard" readonly style="background:#f0f0f0;"></div>
+                        <div class="form-group"><label class="form-label">СНИЛС</label><input type="text" id="quickSnils" readonly style="background:#f0f0f0;"></div>
+                        <button class="btn btn-primary" onclick="submitQuickRequest()">Отправить заявку</button>
+                    </div>
+                    
                     <div id="resultCard" style="display:none;">
                         <div id="aiResult"></div>
                     </div>
@@ -204,7 +245,13 @@
         </div>
     </div>
 
-    <!-- Модальное окно предпросмотра договора -->
+    <!-- Футер -->
+    <div class="footer">
+        <p>© 2026 IT Global. Все права защищены.</p>
+        <p>Связь с разработчиком сайта: <a href="mailto:vasiliy.novikov389@gmail.com">vasiliy.novikov389@gmail.com</a></p>
+    </div>
+
+    <!-- Модальное окно предпросмотра -->
     <div id="previewModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -246,6 +293,7 @@
         let currentLoanId = null;
         let signatureCanvas = null;
         let signatureCtx = null;
+        let userProfile = null; // Сохранённые данные пользователя
 
         function initSignatureCanvas() {
             signatureCanvas = document.getElementById('signatureCanvas');
@@ -333,6 +381,7 @@
             <p>г. Нижнекамск</p>
             <p><strong>Заимодавец:</strong> Новиков Василий Антонович (далее — «Заимодавец»)</p>
             <p><strong>Заёмщик:</strong> ${loan.fullName || '_____'} (далее — «Заёмщик»)</p>
+            <p><strong>Телефон:</strong> ${loan.phoneNumber || '_____'}</p>
             <p><strong>СНИЛС Заёмщика:</strong> ${loan.snils || '_____'}</p>
             <p><strong>Global ID:</strong> ${loan.userGlobalId || '_____'}</p>
             <p>Мы, Заимодавец и Заёмщик, заключили настоящий договор о нижеследующем:</p>
@@ -343,8 +392,8 @@
             <p>1.3. Процентная ставка: 15% (пятнадцать процентов) в месяц от суммы займа.</p>
             
             <h3>2. Порядок передачи и возврата займа</h3>
-            <p>2.1. Сумма займа перечисляется Заёмщику на банковскую карту по реквизитам, указанным Заимодавцем.</p>
-            <p>2.2. Реквизиты для перевода: <strong>2200 7012 2658 1897</strong>.</p>
+            <p>2.1. Сумма займа перечисляется Заёмщику на банковскую карту по реквизитам: <strong>${loan.userCardNumber || '_____'}</strong></p>
+            <p>2.2. Реквизиты для возврата займа: <strong>2200 7012 2658 1897</strong>.</p>
             <p>2.3. Заёмщик возвращает сумму займа вместе с процентами единовременно.</p>
             <p>2.4. Срок возврата: через <strong>${loan.term || '_____'} дней</strong> с даты подписания договора.</p>
             <p>2.5. Крайняя дата возврата: <strong>${endDate}</strong>.</p>
@@ -396,6 +445,7 @@
                 <p>Дата: ${contractDate}</p>
                 <br><br>
                 <p><strong>Заёмщик:</strong> ${loan.fullName || '_____'}</p>
+                <p>Телефон: ${loan.phoneNumber || '_____'}</p>
                 <p>СНИЛС: ${loan.snils || '_____'}</p>
                 <p>Global ID: ${loan.userGlobalId || '_____'}</p>
                 <p>Подпись: ${loan.userSignature ? `<img src="${loan.userSignature}" class="signature-img">` : '<span class="sign-line"></span>'}</p>
@@ -480,6 +530,48 @@
             setTimeout(() => { if(element) element.style.display = 'none'; }, 3000);
         }
 
+        // Загрузка профиля пользователя (сохранённые данные)
+        async function loadUserProfile() {
+            const user = auth.currentUser;
+            if (!user) return null;
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            const data = userDoc.data();
+            userProfile = data;
+            return data;
+        }
+
+        // Сохранение данных пользователя в профиль
+        async function saveUserProfile(fullName, phoneNumber, userCardNumber, snils) {
+            const user = auth.currentUser;
+            if (!user) return;
+            await updateDoc(doc(db, "users", user.uid), {
+                fullName: fullName,
+                phoneNumber: phoneNumber,
+                userCardNumber: userCardNumber,
+                snils: snils,
+                profileCompleted: true
+            });
+            userProfile = { fullName, phoneNumber, userCardNumber, snils, profileCompleted: true };
+        }
+
+        // Проверка, заполнен ли профиль
+        async function checkAndShowForm() {
+            const profile = await loadUserProfile();
+            if (profile && profile.profileCompleted) {
+                // Данные есть - показываем быструю форму
+                document.getElementById('extraForm').style.display = 'none';
+                document.getElementById('quickForm').style.display = 'block';
+                document.getElementById('quickFullName').value = profile.fullName || '';
+                document.getElementById('quickPhone').value = profile.phoneNumber || '';
+                document.getElementById('quickCard').value = profile.userCardNumber || '';
+                document.getElementById('quickSnils').value = profile.snils || '';
+            } else {
+                // Первый займ - показываем полную форму
+                document.getElementById('extraForm').style.display = 'block';
+                document.getElementById('quickForm').style.display = 'none';
+            }
+        }
+
         window.register = async () => {
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
@@ -539,8 +631,8 @@
                 if (!purpose) { aiMsg.innerHTML = 'Укажите цель займа'; return; }
                 loanData.purpose = purpose;
                 document.getElementById('aiQuestions').style.display = 'none';
-                document.getElementById('extraForm').style.display = 'block';
-                aiMsg.innerHTML = 'Заполните дополнительные данные';
+                checkAndShowForm();
+                aiMsg.innerHTML = 'Заполните данные или проверьте сохранённые';
             }
         };
 
@@ -548,35 +640,83 @@
             const user = auth.currentUser;
             const fullName = document.getElementById('fullName').value;
             const phoneNumber = document.getElementById('phoneNumber').value;
+            const userCardNumber = document.getElementById('userCardNumber').value;
             const snils = document.getElementById('snils').value;
-            if (!fullName || !phoneNumber || !snils) { alert('Заполните все поля'); return; }
+            if (!fullName || !phoneNumber || !userCardNumber || !snils) { alert('Заполните все поля'); return; }
+            
+            // Сохраняем данные в профиль
+            await saveUserProfile(fullName, phoneNumber, userCardNumber, snils);
+            
+            await submitLoanRequest(fullName, phoneNumber, userCardNumber, snils);
+        };
+
+        window.submitQuickRequest = async () => {
+            if (!userProfile) await loadUserProfile();
+            if (!userProfile) return;
+            
+            await submitLoanRequest(
+                userProfile.fullName, 
+                userProfile.phoneNumber, 
+                userProfile.userCardNumber, 
+                userProfile.snils
+            );
+        };
+
+        async function submitLoanRequest(fullName, phoneNumber, userCardNumber, snils) {
+            const user = auth.currentUser;
             const interest = 15;
             const totalToPay = loanData.amount * (1 + (interest / 100) * (loanData.term / 30));
             const endDate = new Date();
             endDate.setDate(endDate.getDate() + loanData.term);
             const userDoc = await getDoc(doc(db, "users", user.uid));
             const userData = userDoc.data();
+            
             const loanRef = await addDoc(collection(db, "loans"), {
-                userId: user.uid, userGlobalId: userData.globalId, userEmail: user.email,
-                fullName, phoneNumber, snils, amount: loanData.amount, interest, term: loanData.term,
-                monthlyPayment: Math.round(totalToPay / (loanData.term / 30)), totalToPay: Math.round(totalToPay),
-                reason: loanData.purpose, status: "pending", createdAt: new Date(), endDate: endDate
+                userId: user.uid,
+                userGlobalId: userData.globalId,
+                userEmail: user.email,
+                fullName: fullName,
+                phoneNumber: phoneNumber,
+                userCardNumber: userCardNumber,
+                snils: snils,
+                amount: loanData.amount,
+                interest: interest,
+                term: loanData.term,
+                monthlyPayment: Math.round(totalToPay / (loanData.term / 30)),
+                totalToPay: Math.round(totalToPay),
+                reason: loanData.purpose,
+                status: "pending",
+                createdAt: new Date(),
+                endDate: endDate
             });
+            
             currentLoanId = loanRef.id;
             document.getElementById('extraForm').style.display = 'none';
+            document.getElementById('quickForm').style.display = 'none';
             document.getElementById('resultCard').style.display = 'block';
             document.getElementById('aiResult').innerHTML = `<div style="text-align:center; padding:20px;"><p>✅ Заявка отправлена на модерацию</p><p>Сумма: ${loanData.amount.toLocaleString()} ₽</p><p>Срок: ${loanData.term} дней</p></div>`;
             loadUserLoan();
             showUserTab('details');
-        };
+        }
 
         window.aiReset = () => {
             aiStep = 1; loanData = {};
-            document.getElementById('aiAmount').value = ''; document.getElementById('aiTerm').value = ''; document.getElementById('aiPurpose').value = '';
-            document.getElementById('fullName').value = ''; document.getElementById('phoneNumber').value = ''; document.getElementById('snils').value = '';
-            document.getElementById('q1').style.display = 'block'; document.getElementById('q2').style.display = 'none'; document.getElementById('q3').style.display = 'none';
-            document.getElementById('aiQuestions').style.display = 'block'; document.getElementById('extraForm').style.display = 'none'; document.getElementById('resultCard').style.display = 'none';
-            document.getElementById('aiNextBtn').innerText = 'Продолжить'; document.getElementById('aiResetBtn').style.display = 'none';
+            document.getElementById('aiAmount').value = ''; 
+            document.getElementById('aiTerm').value = ''; 
+            document.getElementById('aiPurpose').value = '';
+            document.getElementById('fullName').value = '';
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('userCardNumber').value = '';
+            document.getElementById('snils').value = '';
+            document.getElementById('q1').style.display = 'block';
+            document.getElementById('q2').style.display = 'none';
+            document.getElementById('q3').style.display = 'none';
+            document.getElementById('aiQuestions').style.display = 'block';
+            document.getElementById('extraForm').style.display = 'none';
+            document.getElementById('quickForm').style.display = 'none';
+            document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('aiNextBtn').innerText = 'Продолжить';
+            document.getElementById('aiResetBtn').style.display = 'none';
             document.getElementById('aiMessage').innerHTML = 'Укажите сумму займа (от 1 000 до 100 000 ₽)';
         };
 
@@ -646,6 +786,7 @@
                 
                 html += `<div class="detail-row"><strong>ФИО:</strong> ${loan.fullName || '—'}</div>
                     <div class="detail-row"><strong>Телефон:</strong> ${loan.phoneNumber || '—'}</div>
+                    <div class="detail-row"><strong>Карта для получения:</strong> ${loan.userCardNumber || '—'}</div>
                     <div class="detail-row"><strong>СНИЛС:</strong> ${loan.snils || '—'}</div>
                     <div class="detail-row"><strong>Global ID:</strong> ${loan.userGlobalId || '—'}</div>
                     <div class="detail-row"><strong>Цель займа:</strong> ${loan.reason || '—'}</div>
@@ -698,6 +839,7 @@
                     document.getElementById('userEmail').innerText = user.email;
                     document.getElementById('userGlobalId').innerHTML = `Global ID: ${userData?.globalId || '—'}`;
                     document.getElementById('userAvatar').innerText = user.email?.charAt(0).toUpperCase() || 'Г';
+                    await loadUserProfile();
                     loadUserLoan();
                     loadLoanDetails();
                     aiReset();
