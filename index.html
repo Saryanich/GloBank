@@ -269,13 +269,14 @@
     </div>
 
     <script type="module">
+        // GLoB Data Firebase конфиг
         const firebaseConfig = {
-            apiKey: "AIzaSyB7tfmG0ekiOnc2ONk50eS-yBAv0VrbTY8",
-            authDomain: "globank-7c7a9.firebaseapp.com",
-            projectId: "globank-7c7a9",
-            storageBucket: "globank-7c7a9.firebasestorage.app",
-            messagingSenderId: "283206945009",
-            appId: "1:283206945009:web:65e5d3f419f487e6368150"
+            apiKey: "AIzaSyA6GGJxAiao77U7_9mBUEjftmS_FnSWbIw",
+            authDomain: "glob-data.firebaseapp.com",
+            projectId: "glob-data",
+            storageBucket: "glob-data.firebasestorage.app",
+            messagingSenderId: "122757049174",
+            appId: "1:122757049174:web:ebb425edd0e1a8ea9a44f7"
         };
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -293,7 +294,7 @@
         let currentLoanId = null;
         let signatureCanvas = null;
         let signatureCtx = null;
-        let userProfile = null; // Сохранённые данные пользователя
+        let userProfile = null;
 
         function initSignatureCanvas() {
             signatureCanvas = document.getElementById('signatureCanvas');
@@ -453,7 +454,7 @@
             </div>
             
             <p><em>Договор сформирован автоматически в системе GloBank</em></p>
-            <p><em>Электронная копия договора доступна в личном кабинете по адресу: https://saryanich.github.io/GloBank/</em></p>
+            <p><em>Электронная копия договора доступна в личном кабинете по адресу: https://saryanich.github.io/GLoB-Data/</em></p>
             </body>
             </html>`;
         }
@@ -530,7 +531,7 @@
             setTimeout(() => { if(element) element.style.display = 'none'; }, 3000);
         }
 
-        // Загрузка профиля пользователя (сохранённые данные)
+        // Загрузка профиля пользователя
         async function loadUserProfile() {
             const user = auth.currentUser;
             if (!user) return null;
@@ -558,7 +559,6 @@
         async function checkAndShowForm() {
             const profile = await loadUserProfile();
             if (profile && profile.profileCompleted) {
-                // Данные есть - показываем быструю форму
                 document.getElementById('extraForm').style.display = 'none';
                 document.getElementById('quickForm').style.display = 'block';
                 document.getElementById('quickFullName').value = profile.fullName || '';
@@ -566,7 +566,6 @@
                 document.getElementById('quickCard').value = profile.userCardNumber || '';
                 document.getElementById('quickSnils').value = profile.snils || '';
             } else {
-                // Первый займ - показываем полную форму
                 document.getElementById('extraForm').style.display = 'block';
                 document.getElementById('quickForm').style.display = 'none';
             }
@@ -581,7 +580,13 @@
             try {
                 const userCred = await createUserWithEmailAndPassword(auth, email, password);
                 const globalId = generateGlobalId();
-                await setDoc(doc(db, "users", userCred.user.uid), { email, globalId, role: "user", createdAt: new Date() });
+                await setDoc(doc(db, "users", userCred.user.uid), { 
+                    email, 
+                    globalId, 
+                    role: "user", 
+                    createdAt: new Date(),
+                    profileCompleted: false
+                });
                 showMessage(msgDiv, 'Регистрация успешна!', false);
                 setTimeout(() => showLogin(), 1500);
             } catch (error) { showMessage(msgDiv, error.message, true); }
@@ -644,16 +649,13 @@
             const snils = document.getElementById('snils').value;
             if (!fullName || !phoneNumber || !userCardNumber || !snils) { alert('Заполните все поля'); return; }
             
-            // Сохраняем данные в профиль
             await saveUserProfile(fullName, phoneNumber, userCardNumber, snils);
-            
             await submitLoanRequest(fullName, phoneNumber, userCardNumber, snils);
         };
 
         window.submitQuickRequest = async () => {
             if (!userProfile) await loadUserProfile();
             if (!userProfile) return;
-            
             await submitLoanRequest(
                 userProfile.fullName, 
                 userProfile.phoneNumber, 
