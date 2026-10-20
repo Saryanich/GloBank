@@ -203,8 +203,8 @@
                         </div>
                         <div class="form-group"><label class="form-label">ФИО</label><input type="text" id="fullName" placeholder="Иванов Иван Иванович"></div>
                         <div class="form-group"><label class="form-label">Номер телефона</label><input type="tel" id="phoneNumber" placeholder="+7 999 123-45-67"></div>
-                        <div class="form-group"><label class="form-label">Номер карты для получения займа</label><input type="text" id="userCardNumber" placeholder="2200 7012 2658 1897"></div>
-                        <div class="form-group"><label class="form-label">СНИЛС</label><input type="text" id="snils" placeholder="123-456-789 01"></div>
+                        <div class="form-group"><label class="form-label">Номер карты для получения займа</label><input type="text" id="userCardNumber" maxlength="23" inputmode="numeric" autocomplete="off" placeholder="Номер карты" aria-describedby="cardHelp"><small id="cardHelp">Укажите номер карты без пробелов или с пробелами.</small></div>
+                        <div class="form-group"><label class="form-label">СНИЛС</label><input type="text" id="snils" maxlength="14" inputmode="numeric" autocomplete="off" placeholder="123-456-789 01"></div>
                         <button class="btn btn-primary" onclick="submitFullRequest()">Отправить заявку</button>
                     </div>
                     
@@ -381,10 +381,10 @@
             <h2>Договор займа</h2>
             <p>г. Нижнекамск</p>
             <p><strong>Заимодавец:</strong> Новиков Василий Антонович (далее — «Заимодавец»)</p>
-            <p><strong>Заёмщик:</strong> ${loan.fullName || '_____'} (далее — «Заёмщик»)</p>
-            <p><strong>Телефон:</strong> ${loan.phoneNumber || '_____'}</p>
-            <p><strong>СНИЛС Заёмщика:</strong> ${loan.snils || '_____'}</p>
-            <p><strong>Global ID:</strong> ${loan.userGlobalId || '_____'}</p>
+            <p><strong>Заёмщик:</strong> ${escapeHTML(loan.fullName || '_____')} (далее — «Заёмщик»)</p>
+            <p><strong>Телефон:</strong> ${escapeHTML(loan.phoneNumber || '_____')}</p>
+            <p><strong>СНИЛС Заёмщика:</strong> ${escapeHTML(loan.snils || '_____')}</p>
+            <p><strong>Global ID:</strong> ${escapeHTML(loan.userGlobalId || '_____')}</p>
             <p>Мы, Заимодавец и Заёмщик, заключили настоящий договор о нижеследующем:</p>
             
             <h3>1. Предмет договора</h3>
@@ -393,7 +393,7 @@
             <p>1.3. Процентная ставка: 15% (пятнадцать процентов) в месяц от суммы займа.</p>
             
             <h3>2. Порядок передачи и возврата займа</h3>
-            <p>2.1. Сумма займа перечисляется Заёмщику на банковскую карту по реквизитам: <strong>${loan.userCardNumber || '_____'}</strong></p>
+            <p>2.1. Сумма займа перечисляется Заёмщику на банковскую карту по реквизитам: <strong>${escapeHTML(loan.userCardNumber || '_____')}</strong></p>
             <p>2.2. Реквизиты для возврата займа: <strong>2200 7012 2658 1897</strong>.</p>
             <p>2.3. Заёмщик возвращает сумму займа вместе с процентами единовременно.</p>
             <p>2.4. Срок возврата: через <strong>${loan.term || '_____'} дней</strong> с даты подписания договора.</p>
@@ -407,7 +407,7 @@
             
             <h3>4. Порядок оплаты</h3>
             <p>4.1. Заёмщик обязуется перевести денежные средства на карту Заимодавца: <strong>2200 7012 2658 1897</strong>.</p>
-            <p>4.2. В назначении платежа указать: «Возврат займа по договору от ${contractDate}, Global ID: ${loan.userGlobalId || '_____'}, СНИЛС: ${loan.snils || '_____'}».</p>
+            <p>4.2. В назначении платежа указать: «Возврат займа по договору от ${contractDate}, Global ID: ${escapeHTML(loan.userGlobalId || '_____')}, СНИЛС: ${escapeHTML(loan.snils || '_____')}».</p>
             <p>4.3. Факт оплаты подтверждается выпиской по банковской карте Заёмщика.</p>
             
             <h3>5. Ответственность за просрочку</h3>
@@ -418,10 +418,10 @@
             <p><strong>Номер карты:</strong> 2200 7012 2658 1897</p>
             <p><strong>Получатель:</strong> Новиков Василий Антонович</p>
             <p><strong>Банк:</strong> ПАО Т-Банк</p>
-            <p><strong>Назначение платежа:</strong> Возврат займа, Global ID: ${loan.userGlobalId || '_____'}, СНИЛС: ${loan.snils || '_____'}</p>
+            <p><strong>Назначение платежа:</strong> Возврат займа, Global ID: ${escapeHTML(loan.userGlobalId || '_____')}, СНИЛС: ${escapeHTML(loan.snils || '_____')}</p>
             
             <h3>7. Идентификация Заёмщика</h3>
-            <p>7.1. Заёмщик подтверждает, что указанный СНИЛС ${loan.snils || '_____'} принадлежит ему и является действительным.</p>
+            <p>7.1. Заёмщик подтверждает, что указанный СНИЛС ${escapeHTML(loan.snils || '_____')} принадлежит ему и является действительным.</p>
             <p>7.2. Заимодавец вправе проверить действительность СНИЛС через государственные реестры.</p>
             <p>7.3. Предоставление недействительного или чужого СНИЛС является основанием для отказа в выдаче займа или расторжения договора в одностороннем порядке.</p>
             
@@ -445,10 +445,10 @@
                 <p>Подпись: ${loan.adminSignature ? `<img src="${loan.adminSignature}" class="signature-img">` : '<span class="sign-line"></span>'}</p>
                 <p>Дата: ${contractDate}</p>
                 <br><br>
-                <p><strong>Заёмщик:</strong> ${loan.fullName || '_____'}</p>
-                <p>Телефон: ${loan.phoneNumber || '_____'}</p>
-                <p>СНИЛС: ${loan.snils || '_____'}</p>
-                <p>Global ID: ${loan.userGlobalId || '_____'}</p>
+                <p><strong>Заёмщик:</strong> ${escapeHTML(loan.fullName || '_____')}</p>
+                <p>Телефон: ${escapeHTML(loan.phoneNumber || '_____')}</p>
+                <p>СНИЛС: ${escapeHTML(loan.snils || '_____')}</p>
+                <p>Global ID: ${escapeHTML(loan.userGlobalId || '_____')}</p>
                 <p>Подпись: ${loan.userSignature ? `<img src="${loan.userSignature}" class="signature-img">` : '<span class="sign-line"></span>'}</p>
                 <p>Дата: ${contractDate}</p>
             </div>
@@ -641,16 +641,32 @@
             }
         };
 
+        function escapeHTML(value) {
+            return String(value ?? '—').replace(/[&<>"']/g, ch => ({
+                '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+            }[ch]));
+        }
+
         window.submitFullRequest = async () => {
             const user = auth.currentUser;
-            const fullName = document.getElementById('fullName').value;
-            const phoneNumber = document.getElementById('phoneNumber').value;
-            const userCardNumber = document.getElementById('userCardNumber').value;
-            const snils = document.getElementById('snils').value;
+            const fullName = document.getElementById('fullName').value.trim().replace(/\\s+/g, ' ');
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const userCardNumber = document.getElementById('userCardNumber').value.replace(/\\s+/g, '');
+            const snils = document.getElementById('snils').value.trim();
+            if (!auth.currentUser) { alert('Сначала войдите в аккаунт.'); return; }
             if (!fullName || !phoneNumber || !userCardNumber || !snils) { alert('Заполните все поля'); return; }
-            
-            await saveUserProfile(fullName, phoneNumber, userCardNumber, snils);
-            await submitLoanRequest(fullName, phoneNumber, userCardNumber, snils);
+            if (fullName.length < 2 || fullName.length > 100 || phoneNumber.length > 30) { alert('Проверьте ФИО и номер телефона.'); return; }
+            if (!/^\\+?[0-9()\\- ]{7,30}$/.test(phoneNumber)) { alert('Введите корректный номер телефона.'); return; }
+            if (!/^[0-9]{13,19}$/.test(userCardNumber)) { alert('Номер карты должен содержать от 13 до 19 цифр.'); return; }
+            const snilsDigits = snils.replace(/\\D/g, '');
+            if (!/^[0-9]{11}$/.test(snilsDigits)) { alert('СНИЛС должен содержать 11 цифр.'); return; }
+            try {
+                await saveUserProfile(fullName, phoneNumber, userCardNumber, snilsDigits);
+                await submitLoanRequest(fullName, phoneNumber, userCardNumber, snilsDigits);
+            } catch (error) {
+                console.error('GloBank request failed', error);
+                alert('Не удалось отправить заявку. Проверьте подключение и попробуйте снова.');
+            }
         };
 
         window.submitQuickRequest = async () => {
@@ -666,6 +682,9 @@
 
         async function submitLoanRequest(fullName, phoneNumber, userCardNumber, snils) {
             const user = auth.currentUser;
+            if (!user) throw new Error('Требуется авторизация.');
+            if (!Number.isFinite(Number(loanData.amount)) || Number(loanData.amount) < 1000 || Number(loanData.amount) > 100000) throw new Error('Недопустимая сумма займа.');
+            if (!Number.isFinite(Number(loanData.term)) || Number(loanData.term) < 7 || Number(loanData.term) > 365) throw new Error('Недопустимый срок займа.');
             const interest = 15;
             const totalToPay = loanData.amount * (1 + (interest / 100) * (loanData.term / 30));
             const endDate = new Date();
@@ -783,15 +802,15 @@
                 } else if (loan.status === 'waiting_admin_signature') {
                     html += `<div class="detail-row"><strong>Статус:</strong> Ожидает подписи администратора</div>`;
                 } else if (loan.status === 'rejected') {
-                    html += `<div class="detail-row"><strong>Причина отказа:</strong> ${loan.rejectedReason || 'Не указана'}</div>`;
+                    html += `<div class="detail-row"><strong>Причина отказа:</strong> ${escapeHTML(loan.rejectedReason || 'Не указана')}</div>`;
                 }
                 
-                html += `<div class="detail-row"><strong>ФИО:</strong> ${loan.fullName || '—'}</div>
-                    <div class="detail-row"><strong>Телефон:</strong> ${loan.phoneNumber || '—'}</div>
-                    <div class="detail-row"><strong>Карта для получения:</strong> ${loan.userCardNumber || '—'}</div>
-                    <div class="detail-row"><strong>СНИЛС:</strong> ${loan.snils || '—'}</div>
-                    <div class="detail-row"><strong>Global ID:</strong> ${loan.userGlobalId || '—'}</div>
-                    <div class="detail-row"><strong>Цель займа:</strong> ${loan.reason || '—'}</div>
+                html += `<div class="detail-row"><strong>ФИО:</strong> ${escapeHTML(loan.fullName || '—')}</div>
+                    <div class="detail-row"><strong>Телефон:</strong> ${escapeHTML(loan.phoneNumber || '—')}</div>
+                    <div class="detail-row"><strong>Карта для получения:</strong> ${escapeHTML(loan.userCardNumber || '—')}</div>
+                    <div class="detail-row"><strong>СНИЛС:</strong> ${escapeHTML(loan.snils || '—')}</div>
+                    <div class="detail-row"><strong>Global ID:</strong> ${escapeHTML(loan.userGlobalId || '—')}</div>
+                    <div class="detail-row"><strong>Цель займа:</strong> ${escapeHTML(loan.reason || '—')}</div>
                 </div>`;
             }
             container.innerHTML = html;
