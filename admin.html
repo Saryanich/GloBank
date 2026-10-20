@@ -212,6 +212,7 @@
         const auth = getAuth();
         const db = getFirestore();
         let currentOrdersTab = 'new';
+        const escapeHTML = (value) => String(value ?? '—').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
         async function loadOrdersStats() {
             const ordersSnap = await getDocs(collection(db, "site_orders"));
@@ -233,13 +234,13 @@
             let html = '';
             for (const order of orders) {
                 const date = order.createdAt?.toDate().toLocaleString() || '—';
-                html += `<div class="order-card"><div class="order-header"><div><strong>${order.productName || 'Не указан'}</strong> <span class="loan-status ${order.read ? 'status-completed' : 'status-new'}">${order.read ? 'Прочитан' : '🆕 Новый'}</span></div><div>${date}</div></div>
-                <div class="order-details"><div class="detail-item"><span class="detail-label">Global ID:</span><span class="detail-value">${order.globalId || '—'}</span></div>
-                <div class="detail-item"><span class="detail-label">ФИО:</span><span class="detail-value">${order.fullName || '—'}</span></div>
-                <div class="detail-item"><span class="detail-label">Телефон:</span><span class="detail-value">${order.phoneNumber || '—'}</span></div>
-                <div class="detail-item"><span class="detail-label">СНИЛС:</span><span class="detail-value">${order.snils || '—'}</span></div>
-                <div class="detail-item full-width"><span class="detail-label">Сообщение:</span><span class="detail-value">${order.message || '—'}</span></div></div>
-                <div class="order-actions">${!order.read ? `<button class="btn btn-success" onclick="markOrderRead('${order.id}')">📖 Отметить прочитанным</button>` : ''}<button class="btn btn-danger" onclick="deleteOrder('${order.id}')">🗑 Удалить</button></div></div>`;
+                html += `<div class="order-card"><div class="order-header"><div><strong>${escapeHTML(order.productName || 'Не указан')}</strong> <span class="loan-status ${order.read ? 'status-completed' : 'status-new'}">${order.read ? 'Прочитан' : '🆕 Новый'}</span></div><div>${date}</div></div>
+                <div class="order-details"><div class="detail-item"><span class="detail-label">Global ID:</span><span class="detail-value">${escapeHTML(order.globalId || '—')}</span></div>
+                <div class="detail-item"><span class="detail-label">ФИО:</span><span class="detail-value">${escapeHTML(order.fullName || '—')}</span></div>
+                <div class="detail-item"><span class="detail-label">Телефон:</span><span class="detail-value">${escapeHTML(order.phoneNumber || '—')}</span></div>
+                <div class="detail-item"><span class="detail-label">СНИЛС:</span><span class="detail-value">${escapeHTML(order.snils || '—')}</span></div>
+                <div class="detail-item full-width"><span class="detail-label">Сообщение:</span><span class="detail-value">${escapeHTML(order.message || '—')}</span></div></div>
+                <div class="order-actions">${!order.read ? `<button class="btn btn-success" onclick="markOrderRead('${escapeHTML(order.id)}')">📖 Отметить прочитанным</button>` : ''}<button class="btn btn-danger" onclick="deleteOrder('${escapeHTML(order.id)}')">🗑 Удалить</button></div></div>`;
             }
             container.innerHTML = html;
         }
