@@ -649,16 +649,16 @@
 
         window.submitFullRequest = async () => {
             const user = auth.currentUser;
-            const fullName = document.getElementById('fullName').value.trim().replace(/\\s+/g, ' ');
+            const fullName = document.getElementById('fullName').value.trim().replace(/\s+/g, ' ');
             const phoneNumber = document.getElementById('phoneNumber').value.trim();
             const userCardNumber = document.getElementById('userCardNumber').value.replace(/\\s+/g, '');
             const snils = document.getElementById('snils').value.trim();
             if (!auth.currentUser) { alert('Сначала войдите в аккаунт.'); return; }
             if (!fullName || !phoneNumber || !userCardNumber || !snils) { alert('Заполните все поля'); return; }
             if (fullName.length < 2 || fullName.length > 100 || phoneNumber.length > 30) { alert('Проверьте ФИО и номер телефона.'); return; }
-            if (!/^\\+?[0-9()\\- ]{7,30}$/.test(phoneNumber)) { alert('Введите корректный номер телефона.'); return; }
+            if (!/^\+?[0-9()\- ]{7,30}$/.test(phoneNumber)) { alert('Введите корректный номер телефона.'); return; }
             if (!/^[0-9]{13,19}$/.test(userCardNumber)) { alert('Номер карты должен содержать от 13 до 19 цифр.'); return; }
-            const snilsDigits = snils.replace(/\\D/g, '');
+            const snilsDigits = snils.replace(/\D/g, '');
             if (!/^[0-9]{11}$/.test(snilsDigits)) { alert('СНИЛС должен содержать 11 цифр.'); return; }
             try {
                 await saveUserProfile(fullName, phoneNumber, userCardNumber, snilsDigits);
