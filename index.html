@@ -651,7 +651,7 @@
             const user = auth.currentUser;
             const fullName = document.getElementById('fullName').value.trim().replace(/\s+/g, ' ');
             const phoneNumber = document.getElementById('phoneNumber').value.trim();
-            const userCardNumber = document.getElementById('userCardNumber').value.replace(/\\s+/g, '');
+            const userCardNumber = document.getElementById('userCardNumber').value.replace(/\s+/g, '');
             const snils = document.getElementById('snils').value.trim();
             if (!auth.currentUser) { alert('Сначала войдите в аккаунт.'); return; }
             if (!fullName || !phoneNumber || !userCardNumber || !snils) { alert('Заполните все поля'); return; }
@@ -670,14 +670,15 @@
         };
 
         window.submitQuickRequest = async () => {
-            if (!userProfile) await loadUserProfile();
-            if (!userProfile) return;
-            await submitLoanRequest(
-                userProfile.fullName, 
-                userProfile.phoneNumber, 
-                userProfile.userCardNumber, 
-                userProfile.snils
-            );
+            try {
+                if (!auth.currentUser) { alert('Сначала войдите в аккаунт.'); return; }
+                if (!userProfile) await loadUserProfile();
+                if (!userProfile) return;
+                await submitLoanRequest(userProfile.fullName, userProfile.phoneNumber, userProfile.userCardNumber, userProfile.snils);
+            } catch (error) {
+                console.error('GloBank quick request failed', error);
+                alert('Не удалось отправить заявку. Проверьте подключение и попробуйте снова.');
+            }
         };
 
         async function submitLoanRequest(fullName, phoneNumber, userCardNumber, snils) {
