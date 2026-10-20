@@ -684,6 +684,14 @@
         async function submitLoanRequest(fullName, phoneNumber, userCardNumber, snils) {
             const user = auth.currentUser;
             if (!user) throw new Error('Требуется авторизация.');
+            fullName = String(fullName || '').trim().replace(/\s+/g, ' ');
+            phoneNumber = String(phoneNumber || '').trim();
+            userCardNumber = String(userCardNumber || '').replace(/\s+/g, '');
+            snils = String(snils || '').replace(/\D/g, '');
+            if (fullName.length < 2 || fullName.length > 100) throw new Error('Проверьте ФИО.');
+            if (!/^\+?[0-9()\- ]{7,30}$/.test(phoneNumber)) throw new Error('Введите корректный номер телефона.');
+            if (!/^[0-9]{13,19}$/.test(userCardNumber)) throw new Error('Номер карты должен содержать от 13 до 19 цифр.');
+            if (!/^[0-9]{11}$/.test(snils)) throw new Error('СНИЛС должен содержать 11 цифр.');
             if (!Number.isFinite(Number(loanData.amount)) || Number(loanData.amount) < 1000 || Number(loanData.amount) > 100000) throw new Error('Недопустимая сумма займа.');
             if (!Number.isFinite(Number(loanData.term)) || Number(loanData.term) < 7 || Number(loanData.term) > 365) throw new Error('Недопустимый срок займа.');
             const interest = 15;
