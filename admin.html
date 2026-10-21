@@ -176,8 +176,7 @@
             </div>
             
             <div class="main-tabs">
-                <button class="main-tab active" onclick="switchMainTab('loans')">🏦 Займы GloBank</button>
-                <button class="main-tab" onclick="switchMainTab('orders')">📦 Заказы IT Global</button>
+                <button class="main-tab active" onclick="showTab('pending')">🏦 Займы GloBank</button>
             </div>
             
             <div id="loansSection">
@@ -189,16 +188,7 @@
                 </div>
                 <div id="loansList"><div class="loan-card" style="text-align:center;">Загрузка...</div></div>
             </div>
-            
-            <div id="ordersSection" style="display: none;">
-                <div class="tabs">
-                    <button class="tab active" onclick="showOrdersTab('new')">🆕 Новые заказы</button>
-                    <button class="tab" onclick="showOrdersTab('read')">📖 Прочитанные</button>
-                    <button class="tab" onclick="showOrdersTab('all')">📋 Все заказы</button>
-                </div>
-                <div class="stats" id="ordersStats"></div>
-                <div id="ordersList"><div class="order-card" style="text-align:center;">Загрузка...</div></div>
-            </div>
+
         </div>
     </div>
 
@@ -239,9 +229,7 @@
         const auth = getAuth();
         const db = getFirestore();
         let signatureCanvas = null, signatureCtx = null, currentLoanId = null;
-        let currentMainTab = 'loans';
         let currentLoansTab = 'pending';
-        let currentOrdersTab = 'new';
         const escapeHTML = (value) => String(value ?? '—').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
         async function downloadUserData(loan) {
@@ -365,64 +353,13 @@
         window.adminDeleteLoan = async (loanId) => { if (confirm('Удалить?')) await deleteDoc(doc(db, "loans", loanId)); loadLoans(currentLoansTab); };
         window.showTab = (tab) => { currentLoansTab = tab; document.querySelectorAll('#loansSection .tab').forEach(t => t.classList.remove('active')); event.target.classList.add('active'); loadLoans(tab); };
 
-        async function loadOrdersStats() {
-            const ordersSnap = await getDocs(collection(db, "site_orders"));
-            const orders = ordersSnap.docs.map(d => d.data());
-            document.getElementById('ordersStats').innerHTML = `<div class="stat-card"><div class="stat-number">${orders.filter(o => !o.read).length}</div><div class="stat-label">🆕 Новые</div></div>
-            <div class="stat-card"><div class="stat-number">${orders.filter(o => o.read).length}</div><div class="stat-label">📖 Прочитанные</div></div>
-            <div class="stat-card"><div class="stat-number">${orders.length}</div><div class="stat-label">📋 Всего</div></div>`;
-        }
-
-        async function loadOrders(statusFilter = 'new') {
-            const q = query(collection(db, "site_orders"), orderBy("createdAt", "desc"));
-            const querySnapshot = await getDocs(q);
-            let orders = [];
-            querySnapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
-            if (statusFilter === 'new') orders = orders.filter(o => !o.read);
-            else if (statusFilter === 'read') orders = orders.filter(o => o.read);
-            const container = document.getElementById('ordersList');
-            if (orders.length === 0) { container.innerHTML = '<div class="order-card" style="text-align:center;">📭 Нет заказов</div>'; return; }
-            let html = '';
-            for (const order of orders) {
-                const date = order.createdAt?.toDate().toLocaleString() || '—';
-                html += `<div class="order-card"><div class="order-header"><div><strong>${escapeHTML(order.productName || 'Не указан')}</strong> <span class="loan-status ${order.read ? 'status-completed' : 'status-new'}">${order.read ? 'Прочитан' : '🆕 Новый'}</span></div><div>${date}</div></div>
-                <div class="order-details"><div class="detail-item"><span class="detail-label">Global ID:</span><span class="detail-value">${escapeHTML(order.globalId || '—')}</span></div>
-                <div class="detail-item"><span class="detail-label">ФИО:</span><span class="detail-value">${escapeHTML(order.fullName || '—')}</span></div>
-                <div class="detail-item"><span class="detail-label">Телефон:</span><span class="detail-value">${escapeHTML(order.phoneNumber || '—')}</span></div>
-                <div class="detail-item"><span class="detail-label">СНИЛС:</span><span class="detail-value">${escapeHTML(order.snils || '—')}</span></div>
-                <div class="detail-item full-width"><span class="detail-label">Сообщение:</span><span class="detail-value">${escapeHTML(order.message || '—')}</span></div></div>
-                <div class="order-actions">${!order.read ? `<button class="btn btn-success" onclick="markOrderRead('${order.id}')">📖 Отметить прочитанным</button>` : ''}<button class="btn btn-danger" onclick="deleteOrder('${order.id}')">🗑 Удалить</button></div></div>`;
-            }
-            container.innerHTML = html;
-        }
-
-        window.markOrderRead = async (orderId) => { await updateDoc(doc(db, "site_orders", orderId), { read: true }); loadOrders(currentOrdersTab); loadOrdersStats(); };
-        window.deleteOrder = async (orderId) => { if (confirm('Удалить заказ?')) { await deleteDoc(doc(db, "site_orders", orderId)); loadOrders(currentOrdersTab); loadOrdersStats(); } };
-        window.showOrdersTab = (tab) => { currentOrdersTab = tab; document.querySelectorAll('#ordersSection .tab').forEach(t => t.classList.remove('active')); event.target.classList.add('active'); loadOrders(tab); };
-
-        window.switchMainTab = (tab) => {
-            currentMainTab = tab;
-            document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            if (tab === 'loans') {
-                document.getElementById('loansSection').style.display = 'block';
-                document.getElementById('ordersSection').style.display = 'none';
-                loadLoans(currentLoansTab);
-            } else {
-                document.getElementById('loansSection').style.display = 'none';
-                document.getElementById('ordersSection').style.display = 'block';
-                loadOrders(currentOrdersTab);
-                loadOrdersStats();
-            }
-        };
-
         window.logout = async () => { await signOut(auth); window.location.href = 'index.html'; };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.data()?.role !== 'admin') window.location.href = 'index.html';
-                else { loadLoans('pending'); loadOrders('new'); loadOrdersStats(); }
+                else { loadLoans('pending'); }
             } else window.location.href = 'index.html';
         });
     </script>
