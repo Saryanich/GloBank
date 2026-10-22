@@ -335,9 +335,9 @@
                 <div class="detail-item"><span class="detail-label">Телефон:</span><span class="detail-value">${escapeHTML(loan.phoneNumber || '—')}</span></div>
                 <div class="detail-item"><span class="detail-label">Карта для получения:</span><span class="detail-value">${escapeHTML(loan.userCardNumber || '—')}</span></div>
                 <div class="detail-item"><span class="detail-label">СНИЛС:</span><span class="detail-value">${escapeHTML(loan.snils || '—')}</span></div>
-                <div class="detail-item"><span class="detail-label">Сумма:</span><span class="detail-value">${loan.amount?.toLocaleString()} ₽</span></div>
-                <div class="detail-item"><span class="detail-label">Срок:</span><span class="detail-value">${loan.term} дней</span></div>
-                <div class="detail-item"><span class="detail-label">К выплате:</span><span class="detail-value">${loan.totalToPay?.toLocaleString()} ₽</span></div></div>`;
+                <div class="detail-item"><span class="detail-label">Сумма:</span><span class="detail-value">${escapeHTML(loan.amount?.toLocaleString?.() ?? '—')} ₽</span></div>
+                <div class="detail-item"><span class="detail-label">Срок:</span><span class="detail-value">${escapeHTML(loan.term ?? '—')} дней</span></div>
+                <div class="detail-item"><span class="detail-label">К выплате:</span><span class="detail-value">${escapeHTML(loan.totalToPay?.toLocaleString?.() ?? '—')} ₽</span></div></div>`;
                 if (typeof loan.adminSignature === 'string' && loan.adminSignature.startsWith('data:image/png;base64,')) html += `<div><img src="${escapeHTML(loan.adminSignature)}" class="admin-signature-img" alt="Подпись администратора"></div>`;
                 html += `<div class="loan-actions">`;
                 if (loan.status === 'pending') html += `<button class="btn btn-success" data-loan-action="approve" data-loan-id="${escapeHTML(docSnap.id)}">✅ Одобрить</button><button class="btn btn-danger" data-loan-action="reject" data-loan-id="${escapeHTML(docSnap.id)}">❌ Отказать</button>`;
