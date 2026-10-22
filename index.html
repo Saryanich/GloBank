@@ -449,7 +449,7 @@
                 <p>Телефон: ${escapeHTML(loan.phoneNumber || '_____')}</p>
                 <p>СНИЛС: ${escapeHTML(loan.snils || '_____')}</p>
                 <p>Global ID: ${escapeHTML(loan.userGlobalId || '_____')}</p>
-                <p>Подпись: ${loan.userSignature ? `<img src="${loan.userSignature}" class="signature-img">` : '<span class="sign-line"></span>'}</p>
+                <p>Подпись: ${typeof loan.userSignature === 'string' && loan.userSignature.startsWith('data:image/png;base64,') ? `<img src="${escapeHTML(loan.userSignature)}" class="signature-img" alt="Подпись заёмщика">` : '<span class="sign-line"></span>'}</p>
                 <p>Дата: ${contractDate}</p>
             </div>
             
