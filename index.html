@@ -388,19 +388,19 @@
             <p>Мы, Заимодавец и Заёмщик, заключили настоящий договор о нижеследующем:</p>
             
             <h3>1. Предмет договора</h3>
-            <p>1.1. Заимодавец передаёт Заёмщику денежные средства в размере <strong>${loan.amount?.toLocaleString() || '_____'} рублей</strong>.</p>
-            <p>1.2. Заёмщик обязуется вернуть Заимодавцу <strong>${loan.totalToPay?.toLocaleString() || '_____'} рублей</strong>, включая проценты за пользование займом.</p>
+            <p>1.1. Заимодавец передаёт Заёмщику денежные средства в размере <strong>${escapeHTML(loan.amount?.toLocaleString?.() ?? '_____')} рублей</strong>.</p>
+            <p>1.2. Заёмщик обязуется вернуть Заимодавцу <strong>${escapeHTML(loan.totalToPay?.toLocaleString?.() ?? '_____')} рублей</strong>, включая проценты за пользование займом.</p>
             <p>1.3. Процентная ставка: 15% (пятнадцать процентов) в месяц от суммы займа.</p>
             
             <h3>2. Порядок передачи и возврата займа</h3>
             <p>2.1. Сумма займа перечисляется Заёмщику на банковскую карту по реквизитам: <strong>${escapeHTML(loan.userCardNumber || '_____')}</strong></p>
             <p>2.2. Реквизиты для возврата займа: <strong>2200 7012 2658 1897</strong>.</p>
             <p>2.3. Заёмщик возвращает сумму займа вместе с процентами единовременно.</p>
-            <p>2.4. Срок возврата: через <strong>${loan.term || '_____'} дней</strong> с даты подписания договора.</p>
+            <p>2.4. Срок возврата: через <strong>${escapeHTML(loan.term ?? '_____')} дней</strong> с даты подписания договора.</p>
             <p>2.5. Крайняя дата возврата: <strong>${endDate}</strong>.</p>
             
             <h3>3. Условия займа</h3>
-            <p>3.1. Срок займа: <strong>${loan.term || '_____'} дней</strong>.</p>
+            <p>3.1. Срок займа: <strong>${escapeHTML(loan.term ?? '_____')} дней</strong>.</p>
             <p>3.2. Проценты за пользование займом: 15% в месяц.</p>
             <p>3.3. Формула расчёта процентов: Проценты = Сумма займа × 15% × (Срок займа / 30 дней)</p>
             <p>3.4. Общая сумма возврата включает сумму займа и начисленные проценты.</p>
@@ -442,7 +442,7 @@
             <div class="signature-block">
                 <h3>10. Подписи сторон</h3>
                 <p><strong>Заимодавец:</strong> Новиков Василий Антонович</p>
-                <p>Подпись: ${loan.adminSignature ? `<img src="${loan.adminSignature}" class="signature-img">` : '<span class="sign-line"></span>'}</p>
+                <p>Подпись: ${typeof loan.adminSignature === 'string' && loan.adminSignature.startsWith('data:image/png;base64,') ? `<img src="${escapeHTML(loan.adminSignature)}" class="signature-img" alt="Подпись администратора">` : '<span class="sign-line"></span>'}</p>
                 <p>Дата: ${contractDate}</p>
                 <br><br>
                 <p><strong>Заёмщик:</strong> ${escapeHTML(loan.fullName || '_____')}</p>
