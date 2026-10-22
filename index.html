@@ -794,23 +794,25 @@
                 const loan = docSnap.data();
                 currentLoan = loan;
                 currentLoanId = docSnap.id;
-                const statusMap = { 'pending':'На рассмотрении', 'waiting_user_signature':'Ожидает вашей подписи', 'waiting_admin_signature':'Ожидает подписи администратора', 'completed':'Подписан', 'rejected':'Отказано' };
+                const statusMap = { pending: 'На рассмотрении', waiting_user_signature: 'Ожидает вашей подписи', waiting_admin_signature: 'Ожидает подписи администратора', completed: 'Подписан', rejected: 'Отказано' };
+                const statusClass = Object.prototype.hasOwnProperty.call(statusMap, loan.status) ? loan.status : 'unknown';
+                const statusText = statusMap[loan.status] || 'Неизвестный статус';
                 const daysLeft = loan.endDate ? daysUntilEnd(loan.endDate.toDate()) : 0;
                 const showCard = loan.status === 'completed' && daysLeft <= 5 && daysLeft >= 0;
                 
                 html += `<div class="detail-card">
-                    <div class="detail-row"><strong>Статус:</strong> <span class="loan-status status-${loan.status === 'pending' ? 'pending' : loan.status}">${statusMap[loan.status] || loan.status}</span></div>
-                    <div class="detail-row"><strong>Сумма займа:</strong> ${loan.amount?.toLocaleString()} ₽</div>
-                    <div class="detail-row"><strong>К выплате:</strong> ${loan.totalToPay?.toLocaleString()} ₽</div>
-                    <div class="detail-row"><strong>Срок:</strong> ${loan.term} дней</div>
-                    <div class="detail-row"><strong>Дата окончания:</strong> ${loan.endDate ? new Date(loan.endDate.toDate()).toLocaleDateString() : '—'}</div>`;
+                    <div class="detail-row"><strong>Статус:</strong> <span class="loan-status status-${statusClass}">${escapeHTML(statusText)}</span></div>
+                    <div class="detail-row"><strong>Сумма займа:</strong> ${escapeHTML(loan.amount?.toLocaleString?.() ?? '—')} ₽</div>
+                    <div class="detail-row"><strong>К выплате:</strong> ${escapeHTML(loan.totalToPay?.toLocaleString?.() ?? '—')} ₽</div>
+                    <div class="detail-row"><strong>Срок:</strong> ${escapeHTML(loan.term ?? '—')} дней</div>
+                    <div class="detail-row"><strong>Дата окончания:</strong> ${escapeHTML(loan.endDate?.toDate ? loan.endDate.toDate().toLocaleDateString() : '—')}</div>`;
                 
                 if (loan.status === 'completed') {
                     html += `<div class="detail-row"><strong>До окончания:</strong> ${daysLeft} дней</div>`;
                     if (showCard) {
                         html += `<div class="detail-row"><strong>Реквизиты для оплаты:</strong> 2200 7012 2658 1897</div>`;
                     }
-                    html += `<div class="detail-row"><button class="btn btn-primary" onclick="downloadContractPDFFromLoan('${docSnap.id}')" style="margin-top:12px;">📄 Скачать договор PDF</button></div>`;
+                    html += `<div class="detail-row"><button class="btn btn-primary" data-loan-action="download-contract" data-loan-id="${escapeHTML(docSnap.id)}" style="margin-top:12px;">📄 Скачать договор PDF</button></div>`;
                 } else if (loan.status === 'pending') {
                     html += `<div class="detail-row"><strong>Статус:</strong> Заявка на модерации</div>`;
                 } else if (loan.status === 'waiting_user_signature') {
@@ -830,6 +832,9 @@
                 </div>`;
             }
             container.innerHTML = html;
+            container.querySelectorAll('[data-loan-action="download-contract"]').forEach((button) => {
+                button.addEventListener('click', () => window.downloadContractPDFFromLoan(button.dataset.loanId));
+            });
         }
 
         window.downloadContractPDFFromLoan = async (loanId) => {
