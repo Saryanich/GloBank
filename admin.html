@@ -223,7 +223,7 @@
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, addDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, addDoc, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth();
@@ -233,6 +233,7 @@
             target.searchParams.set('continue', window.location.href);
             window.location.replace(target.href);
         }
+        let globalIdSessionUnsub = null;
         let signatureCanvas = null, signatureCtx = null, currentLoanId = null;
         let currentLoansTab = 'pending';
         const escapeHTML = (value) => String(value ?? '—').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -389,6 +390,14 @@
                     window.location.replace('index.html');
                     return;
                 }
+                if (globalIdSessionUnsub) { globalIdSessionUnsub(); globalIdSessionUnsub = null; }
+                globalIdSessionUnsub = onSnapshot(doc(db, "users", user.uid), snap => {
+                    const latest = snap.data() || {};
+                    if (!snap.exists() || latest.accountLocked === true || (token && (latest.revokedDeviceTokens || []).includes(token))) {
+                        if (globalIdSessionUnsub) { globalIdSessionUnsub(); globalIdSessionUnsub = null; }
+                        signOut(auth).catch(() => {}).finally(redirectToGlobalId);
+                    }
+                }, error => console.warn('Global ID admin session watcher:', error));
                 loadLoans('pending');
             } catch (error) {
                 console.error('GloBank admin session check failed:', error);
