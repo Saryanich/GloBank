@@ -228,6 +228,11 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth();
         const db = getFirestore();
+        function redirectToGlobalId() {
+            const target = new URL('/Global-ID/', window.location.origin);
+            target.searchParams.set('continue', window.location.href);
+            window.location.replace(target.href);
+        }
         let signatureCanvas = null, signatureCtx = null, currentLoanId = null;
         let currentLoansTab = 'pending';
         const escapeHTML = (value) => String(value ?? '—').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -369,11 +374,26 @@
         window.logout = async () => { await signOut(auth); window.location.href = 'index.html'; };
 
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
+            if (!user) { redirectToGlobalId(); return; }
+            if (!user.emailVerified) { await signOut(auth); redirectToGlobalId(); return; }
+            try {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.data()?.role !== 'admin') window.location.href = 'index.html';
-                else { loadLoans('pending'); }
-            } else window.location.href = 'index.html';
+                if (!userDoc.exists()) { await signOut(auth); redirectToGlobalId(); return; }
+                const data = userDoc.data() || {};
+                let token = null;
+                try { token = localStorage.getItem('itglobal_shared_device_token'); } catch {}
+                if (data.accountLocked === true || (token && (data.revokedDeviceTokens || []).includes(token))) {
+                    await signOut(auth); redirectToGlobalId(); return;
+                }
+                if (data.role !== 'admin') {
+                    window.location.replace('index.html');
+                    return;
+                }
+                loadLoans('pending');
+            } catch (error) {
+                console.error('GloBank admin session check failed:', error);
+                alert('Не удалось проверить авторизацию. Обновите страницу.');
+            }
         });
     </script>
 </body>
