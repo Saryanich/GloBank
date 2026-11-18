@@ -287,6 +287,11 @@
         const auth = getAuth();
         const db = getFirestore();
         setPersistence(auth, browserLocalPersistence);
+        function redirectToGlobalId() {
+            const target = new URL('/Global-ID/', window.location.origin);
+            target.searchParams.set('continue', window.location.href);
+            window.location.replace(target.href);
+        }
 
         let aiStep = 1;
         let loanData = {};
@@ -578,49 +583,10 @@
             }
         }
 
-        window.register = async () => {
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-            const msgDiv = document.getElementById('authMessage');
-            if (!email || !password) { showMessage(msgDiv, 'Заполните все поля', true); return; }
-            if (password.length < 6) { showMessage(msgDiv, 'Пароль должен быть минимум 6 символов', true); return; }
-            try {
-                const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                const globalId = generateGlobalId();
-                await setDoc(doc(db, "users", userCred.user.uid), { 
-                    email, 
-                    globalId, 
-                    role: "user", 
-                    createdAt: new Date(),
-                    profileCompleted: false
-                });
-                showMessage(msgDiv, 'Регистрация успешна!', false);
-                setTimeout(() => showLogin(), 1500);
-            } catch (error) { showMessage(msgDiv, error.message, true); }
-        };
-
-        window.login = async () => {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const msgDiv = document.getElementById('authMessage');
-            if (!email || !password) { showMessage(msgDiv, 'Заполните все поля', true); return; }
-            try { await signInWithEmailAndPassword(auth, email, password); }
-            catch (error) { showMessage(msgDiv, 'Неверный email или пароль', true); }
-        };
-
-        window.loginByGlobalId = async () => {
-            const globalId = document.getElementById('loginGlobalId').value;
-            const msgDiv = document.getElementById('authMessage');
-            if (!globalId) { showMessage(msgDiv, 'Введите Global ID', true); return; }
-            try {
-                const querySnapshot = await getDocs(collection(db, "users"));
-                let foundEmail = null;
-                querySnapshot.forEach((doc) => { const data = doc.data(); if (data.globalId === globalId) foundEmail = data.email; });
-                if (!foundEmail) { showMessage(msgDiv, 'Global ID не найден', true); return; }
-                document.getElementById('loginEmail').value = foundEmail;
-                showMessage(msgDiv, `Найден: ${foundEmail}. Введите пароль`, false);
-            } catch (error) { showMessage(msgDiv, 'Ошибка поиска', true); }
-        };
+        // Регистрация и вход выполняются только на сайте Global ID.
+        window.register = () => redirectToGlobalId();
+        window.login = () => redirectToGlobalId();
+        window.loginByGlobalId = () => redirectToGlobalId();
 
         window.logout = async () => { await signOut(auth); };
 
@@ -871,27 +837,36 @@
         window.showLogin = () => { document.getElementById('loginMode').style.display = 'block'; document.getElementById('registerMode').style.display = 'none'; document.getElementById('authMessage').style.display = 'none'; };
 
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
+            if (!user) { redirectToGlobalId(); return; }
+            if (!user.emailVerified) { await signOut(auth); redirectToGlobalId(); return; }
+            try {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
-                const userData = userDoc.data();
-                if (userData?.role === 'admin') { window.location.href = 'admin.html'; }
-                else {
-                    document.getElementById('userPanel').style.display = 'block';
-                    document.getElementById('authForm').style.display = 'none';
-                    document.getElementById('userEmail').innerText = user.email;
-                    document.getElementById('userGlobalId').innerHTML = `Global ID: ${userData?.globalId || '—'}`;
-                    document.getElementById('userAvatar').innerText = user.email?.charAt(0).toUpperCase() || 'Г';
-                    await loadUserProfile();
-                    loadUserLoan();
-                    loadLoanDetails();
-                    aiReset();
+                if (!userDoc.exists()) { await signOut(auth); redirectToGlobalId(); return; }
+                const userData = userDoc.data() || {};
+                let sharedToken = null;
+                try { sharedToken = localStorage.getItem('itglobal_shared_device_token'); } catch {}
+                if (userData.accountLocked === true || (sharedToken && (userData.revokedDeviceTokens || []).includes(sharedToken))) {
+                    await signOut(auth); redirectToGlobalId(); return;
                 }
-            } else {
-                document.getElementById('userPanel').style.display = 'none';
-                document.getElementById('authForm').style.display = 'block';
-                document.getElementById('loginEmail').value = '';
-                document.getElementById('loginPassword').value = '';
-                document.getElementById('loginGlobalId').value = '';
+                if (userData?.role === 'admin') { window.location.replace('admin.html'); return; }
+                if (userData?.globalIdAccess === false || userData?.gloBankAccess === false) {
+                    document.getElementById('authForm').style.display = 'none';
+                    document.getElementById('userPanel').style.display = 'none';
+                    showMessage(document.getElementById('authMessage'), 'Доступ к GloBank отключён через Global ID.', true);
+                    return;
+                }
+                document.getElementById('userPanel').style.display = 'block';
+                document.getElementById('authForm').style.display = 'none';
+                document.getElementById('userEmail').innerText = user.email;
+                document.getElementById('userGlobalId').textContent = `Global ID: ${userData.globalId || '—'}`;
+                document.getElementById('userAvatar').innerText = user.email?.charAt(0).toUpperCase() || 'Г';
+                await loadUserProfile();
+                loadUserLoan();
+                loadLoanDetails();
+                aiReset();
+            } catch (error) {
+                console.error('Ошибка проверки сессии Global ID:', error);
+                showMessage(document.getElementById('authMessage'), 'Не удалось проверить авторизацию. Обновите страницу.', true);
             }
         });
     </script>
