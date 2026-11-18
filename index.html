@@ -145,20 +145,10 @@
                 </div>
                 <div class="slogan">цифровой банк</div>
             </div>
-            <div id="loginMode">
-                <div class="form-group"><label class="form-label">Global ID</label><input type="text" id="loginGlobalId" placeholder="Введите Global ID"></div>
-                <button class="btn btn-primary" onclick="loginByGlobalId()">Войти по Global ID</button>
-                <div class="divider"><div class="divider-line"></div><div class="divider-text">или</div><div class="divider-line"></div></div>
-                <div class="form-group"><label class="form-label">Электронная почта</label><input type="email" id="loginEmail" placeholder="your@email.com"></div>
-                <div class="form-group"><label class="form-label">Пароль</label><input type="password" id="loginPassword" placeholder="Введите пароль"></div>
-                <button class="btn btn-primary" onclick="login()">Войти по Email</button>
-                <div class="switch-link" onclick="showRegister()">Нет аккаунта? Зарегистрироваться</div>
-            </div>
-            <div id="registerMode" style="display:none;">
-                <div class="form-group"><label class="form-label">Электронная почта</label><input type="email" id="regEmail" placeholder="your@email.com"></div>
-                <div class="form-group"><label class="form-label">Пароль</label><input type="password" id="regPassword" placeholder="Минимум 6 символов"></div>
-                <button class="btn btn-primary" onclick="register()">Зарегистрироваться</button>
-                <div class="switch-link" onclick="showLogin()">Уже есть аккаунт? Войти</div>
+            <div id="loginMode" style="text-align:center;">
+                <h3 style="margin:8px 0 10px;">Единый вход IT Global</h3>
+                <p style="color:#687587;line-height:1.6;margin:0 0 20px;">Вход, регистрация, подтверждение почты и защита аккаунта выполняются через Global ID.</p>
+                <button class="btn btn-primary" onclick="login()">Продолжить через Global ID</button>
             </div>
             <div id="authMessage" class="message"></div>
         </div>
