@@ -281,7 +281,7 @@
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, query, where, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth();
@@ -293,6 +293,7 @@
             window.location.replace(target.href);
         }
 
+        let globalIdSessionUnsub = null;
         let aiStep = 1;
         let loanData = {};
         let currentLoan = null;
@@ -860,6 +861,14 @@
                 document.getElementById('userEmail').innerText = user.email;
                 document.getElementById('userGlobalId').textContent = `Global ID: ${userData.globalId || '—'}`;
                 document.getElementById('userAvatar').innerText = user.email?.charAt(0).toUpperCase() || 'Г';
+                if (globalIdSessionUnsub) { globalIdSessionUnsub(); globalIdSessionUnsub = null; }
+                globalIdSessionUnsub = onSnapshot(doc(db, "users", user.uid), snap => {
+                    const latest = snap.data() || {};
+                    if (!snap.exists() || latest.accountLocked === true || (sharedToken && (latest.revokedDeviceTokens || []).includes(sharedToken))) {
+                        if (globalIdSessionUnsub) { globalIdSessionUnsub(); globalIdSessionUnsub = null; }
+                        signOut(auth).catch(() => {}).finally(redirectToGlobalId);
+                    }
+                }, error => console.warn('Global ID session watcher:', error));
                 await loadUserProfile();
                 loadUserLoan();
                 loadLoanDetails();
